@@ -171,7 +171,7 @@ df_Fdecks <- bind_rows(df_FDecks, FDecks_gender_means)
 
 
 # Step 5: Bridge Athletic Table #
-#data_holder$bridge <- sb_get_event(form = "BridgeAthletic Workout Session",
+#df_bridge <- sb_get_event(form = "BridgeAthletic Workout Session",
 #                                   date_range = sb_date_range("5", "years"),
 #                                   url = "ams.ausport.gov.au/nswis/",
 #                                   username = ams_un,

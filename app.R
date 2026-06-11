@@ -138,9 +138,9 @@ if (Import_AMS) {
                                user_value = Club_list$Athlete
                              ))
   df_FDecks <- AMS_FDecks
-  write.csv(df_FDecks,"./Data/df_FDecks.csv")
+  write.csv(df_FDecks,"./df_FDecks.csv")
 } else {
-  df_FDecks <- fread("./Data/df_FDecks.csv")
+  df_FDecks <- fread("./df_FDecks.csv")
 }
 
 df_FDecks <- df_FDecks %>% rename(Athlete = about) %>%

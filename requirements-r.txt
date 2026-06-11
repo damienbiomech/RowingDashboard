@@ -1,6 +1,7 @@
 shiny
 tidyverse
-lubridate
+data.table
+plotly
+smartabaseR
 shinyWidgets
-emojifont
-showtext
+shinydashboard

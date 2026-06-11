@@ -1,0 +1,6 @@
+shiny
+tidyverse
+lubridate
+shinyWidgets
+emojifont
+showtext

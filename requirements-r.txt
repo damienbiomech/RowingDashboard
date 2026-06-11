@@ -4,6 +4,6 @@ data.table
 plotly
 remotes
 devtools
-smartabaseR
+Teamworksapp/smartabaseR
 shinyWidgets
 shinydashboard

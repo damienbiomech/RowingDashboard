@@ -12,10 +12,10 @@ library(shinydashboard)
 ################################################################################
 
 # Load Athlete & Club list #
-Club_list <- read.csv("./Data/Athlete_list.csv")
+Club_list <- read.csv("./Athlete_list.csv")
 
 # Load Benchmarks Data & Physiology Data #
-db <- fread("./Data/Athlete Profile_DB.csv") %>%
+db <- fread("./Athlete Profile_DB.csv") %>%
   mutate(Date = as.Date(Date))
 
 db <- left_join(db, Club_list, by = "Athlete", suffix = c("", ".y")) %>% 
@@ -25,7 +25,7 @@ db <- left_join(db, Club_list, by = "Athlete", suffix = c("", ".y")) %>%
 setnames(db, names(db), gsub(" ", "_", names(db)))
 
 # Load RA Benchmarks #
-benchmark_lookup <- read.csv("./Data/benchmarks.csv")
+benchmark_lookup <- read.csv("./benchmarks.csv")
 
 # Credentials #
 

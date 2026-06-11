@@ -2,6 +2,8 @@ shiny
 tidyverse
 data.table
 plotly
+remotes
+devtools
 smartabaseR
 shinyWidgets
 shinydashboard

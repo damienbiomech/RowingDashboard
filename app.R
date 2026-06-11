@@ -11,6 +11,10 @@ library(shinydashboard)
 
 ################################################################################
 
+# Load the UI and server components
+options(shiny.host = '0.0.0.0')
+options(shiny.port = 80)
+
 # Load Athlete & Club list #
 Club_list <- read.csv("./Athlete_list.csv")
 

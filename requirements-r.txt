@@ -7,3 +7,4 @@ devtools
 Teamworksapp/smartabaseR
 shinyWidgets
 shinydashboard
+DBI

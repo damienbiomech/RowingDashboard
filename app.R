@@ -12,12 +12,8 @@ library(smartabaseR)
 
 cDir <- '/srv/shiny-server'
 
-#source(paste0(cDir, '/server.R'))
-#source(paste0(cDir, '/ui.R'))
-
 options(shiny.host = '0.0.0.0')
 options(shiny.port = 80)
-#shinyApp(ui = ui, server = server)
 
 ################################################################################
 

@@ -25,7 +25,7 @@ db <- left_join(db, Club_list, by = "Athlete", suffix = c("", ".y")) %>%
 setnames(db, names(db), gsub(" ", "_", names(db)))
 
 # Load RA Benchmarks #
-benchmark_lookup <- read.csv("./Data/benchmarks.csv")
+benchmark_lookup <- read.csv("./benchmarks.csv")
 
 
 ### Import Data ###

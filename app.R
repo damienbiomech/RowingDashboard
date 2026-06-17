@@ -4,13 +4,11 @@
 library(shiny)
 library(tidyverse)
 library(data.table)
-#library(smartabaseR)
 library(plotly)
 library(shinyWidgets)
 library(shinydashboard)
 library(DBI)
-# Load smartabaseR package
-devtools::install_github("Teamworksapp/smartabaseR")
+library(smartabaseR)
 
 cDir <- '/srv/shiny-server'
 

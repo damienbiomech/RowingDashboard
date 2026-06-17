@@ -127,9 +127,10 @@ df_msk <- bind_rows(df_MSK, MSK_gender_means)
 # Connect to NSWIS Database #
 username_db <- Sys.getenv("username")
 password_db <-  Sys.getenv("password")
+ludis_db <-  Sys.getenv("ludis_ip")
 mydb <- DBI::dbConnect(odbc::odbc(),
                        Driver = "ODBC Driver 18 for SQL Server",
-                       Server = "nswis-sql201701",
+                       Server = ludis_db,
                        Database = "nswis_dw",
                        UID = username_db,
                        PWD = password_db,

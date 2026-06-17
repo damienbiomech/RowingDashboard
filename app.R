@@ -139,7 +139,7 @@ mydb <- DBI::dbConnect(odbc::odbc(),
                        Database = "nswis_dw",
                        UID = username_db,
                        PWD = password_db,
-                       Port = 1433)
+                       TrustServerCertificate='yes')
 DBdirectory <- "dbo"
 
 ## Query Database for Athlete & Session Data ##

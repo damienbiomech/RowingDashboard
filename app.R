@@ -11,15 +11,11 @@ library(shinydashboard)
 
 ################################################################################
 
-# Load the UI and server components
-options(shiny.host = '0.0.0.0')
-options(shiny.port = 80)
-
 # Load Athlete & Club list #
-Club_list <- read.csv("./Athlete_list.csv")
+Club_list <- read.csv("./Data/Athlete_list.csv")
 
 # Load Benchmarks Data & Physiology Data #
-db <- fread("./Athlete Profile_DB.csv") %>%
+db <- fread("./Data/Athlete Profile_DB.csv") %>%
   mutate(Date = as.Date(Date))
 
 db <- left_join(db, Club_list, by = "Athlete", suffix = c("", ".y")) %>% 
@@ -29,16 +25,16 @@ db <- left_join(db, Club_list, by = "Athlete", suffix = c("", ".y")) %>%
 setnames(db, names(db), gsub(" ", "_", names(db)))
 
 # Load RA Benchmarks #
-benchmark_lookup <- read.csv("./benchmarks.csv")
+benchmark_lookup <- read.csv("./Data/benchmarks.csv")
 
-# Credentials #
 
-ams_un <- "damien.o'meara"
-ams_pw <- "Damien123"
-
+### Import Data ###
 
 ## AMS Download ##
 
+# Credentials #
+ams_un <- "damien.o'meara"
+ams_pw <- "Damien123"
 
 # Step 1: Trunk Testing #
 AMS_Trunk <- sb_get_event(form = "NSWIS - Rowing - Trunk Testing",
@@ -126,60 +122,50 @@ df_msk <- bind_rows(df_MSK, MSK_gender_means)
 
 
 # Step 4: Force Decks Trials
-Import_AMS <- FALSE
-if (Import_AMS) {
-  AMS_FDecks <- sb_get_event(form = "ForceDecks Trials",
-                             date_range = sb_date_range("1", "years"),
-                             url = "ams.ausport.gov.au/nswis/",
-                             username = ams_un,
-                             password = ams_pw,
-                             filter = sb_get_event_filter(
-                               user_key = "about",
-                               user_value = Club_list$Athlete
-                             ))
-  df_FDecks <- AMS_FDecks
-  write.csv(df_FDecks,"./df_FDecks.csv")
-} else {
-  df_FDecks <- fread("./df_FDecks.csv")
-}
 
-df_FDecks <- df_FDecks %>% rename(Athlete = about) %>%
+# Connect to NSWIS Database #
+mydb <- DBI::dbConnect(odbc::odbc(),
+                       Driver = "SQL Server",
+                       Server = "nswis-sql201701",
+                       Database = "nswis_dw",
+                       UID = "Damien",
+                       PWD = "@9e%F261coHy",
+                       Port = 1433)
+DBdirectory <- "dbo"
+
+## Query Database for Athlete & Session Data ##
+Col_list <- "about, start_date, Test_Type, Metric, Value"
+query <- paste0("SELECT ",Col_list," FROM ",DBdirectory, ".Force_Decks_Flow")
+
+df_FDecks <- DBI::dbGetQuery(mydb,query) %>% 
+  dplyr::filter(about %in% Club_list$Athlete) %>%
+  rename(Athlete = about) %>%
   mutate(Date = as.Date(start_date, format = "%d/%m/%Y")) %>%
-  select(Date, Athlete,
-         any_of(c("Test Type","Jump Height (Flight Time) [cm]",
-                  "Concentric Mean Force [N]","Concentric Impulse [Ns]",
-                  "Concentric Peak Force [N]","Eccentric Deceleration Impulse [Ns]",
-                  "Peak Force"))) %>%
-  fill(`Test Type`, .direction = "down") %>%
-  group_by(Date,Athlete,`Test Type`) %>%
-  summarise(across(where(is.numeric), 
-                   ~ (if (all(is.na(.x))) NA_real_ else max(.x, na.rm = TRUE)))) %>% 
-  rename_with(~ stringr::str_replace_all(.x, " \\[N\\]", "")) %>% 
-  rename_with(~ stringr::str_replace_all(.x, " \\[Ns\\]", "")) %>% 
-  rename_with(~ stringr::str_replace_all(.x, " \\[cm\\]", ""))
+  fill(`Test_Type`, .direction = "down")
 
 df_FDecks <- left_join(df_FDecks, Club_list, by = "Athlete") %>%
   dplyr::filter(!is.na(Club))
 
 FDecks_gender_means <- df_FDecks %>%
-  group_by(Gender,`Test Type`) %>%
+  group_by(Gender,Test_Type,Metric) %>%
   summarise(across(where(is.numeric), \(x) mean(x, na.rm = TRUE)),
             Athlete = "Squad Mean",
-            Date = as.Date(NA))
+            Date = as.Date(NA), .groups = "drop_last") %>%
+  dplyr::filter(!is.na(Value)) %>%
+  dplyr::filter(!is.na(Test_Type))
 
-df_Fdecks <- bind_rows(df_FDecks, FDecks_gender_means)
+df_FDecks <- bind_rows(df_FDecks, FDecks_gender_means)
 
 
 # Step 5: Bridge Athletic Table #
-#df_bridge <- sb_get_event(form = "BridgeAthletic Workout Session",
-#                                   date_range = sb_date_range("5", "years"),
-#                                   url = "ams.ausport.gov.au/nswis/",
-#                                   username = ams_un,
-#                                   password = ams_pw,
-#                                   filter = sb_get_event_filter(
-#                                     user_key = "about",
-#                                     user_value = Club_list$Athlete[1]
-#                                   ))
+
+## Query Database for Athlete & Session Data ##
+query <- paste0("SELECT * FROM ",DBdirectory, ".BridgeAthletic_Questionnaire")
+
+df_Bridge <- DBI::dbGetQuery(mydb,query) %>% 
+  dplyr::filter(about %in% Club_list$Athlete) %>% 
+  rename(Athlete = about) %>%
+  mutate(Date = as.Date(`Date of Data`, format = "%Y-%m-%d"))
 
 ################################################################################
 
@@ -246,9 +232,9 @@ ui <- dashboardPage(
       ),
       tabPanel("Force Decks",
                h4(),
-               box(title = "Metrics", status = "warning", solidHeader = TRUE, width = 12,
-                   selectInput("FDecks_metric_ui", "Select Metric:", 
-                               choices = c("All", "CMJ", "SJ","HJ","ISOT","LCMJ"),
+               box(title = "Test", status = "warning", solidHeader = TRUE, width = 12,
+                   selectInput("FDecks_test_ui", "Select Test:", 
+                               choices = c("All", "CMJ", "SJ","IMTP","ISOT","LCMJ"),
                                selected = "CMJ")),
                box(title = "Profile", status = "primary", 
                    solidHeader = TRUE, collapsible = TRUE, 
@@ -384,7 +370,7 @@ server <- function(input, output, session) {
   })
   
   filtered_df_FDecks <- reactive({
-    req(input$athlete_ui, input$FDecks_metric_ui)
+    req(input$athlete_ui, input$FDecks_test_ui)
     
     ath_gender <- db %>% 
       filter(Athlete == input$athlete_ui) %>% 
@@ -393,20 +379,16 @@ server <- function(input, output, session) {
     
     res <- df_FDecks %>% 
       filter(Athlete == input$athlete_ui | (Athlete == "Squad Mean" & Gender == ath_gender)) %>%
-      pivot_longer(cols = c(`Jump Height (Flight Time)`, `Concentric Mean Force`, 
-                            `Concentric Impulse`,`Concentric Peak Force`, 
-                            `Eccentric Deceleration Impulse`),
-                   names_to = "Metric", values_to = "value") %>%
       mutate(Legend_Label = paste(Athlete, ifelse(is.na(Date), "", 
                                                   as.character(Date)), 
-                                  `Test Type`, sep = "<br>"))
+                                  Test_Type, sep = "<br>"))
     
     res <- res %>%
       left_join(benchmark_lookup %>% filter(Gender == ath_gender), 
                 by = c("Metric" = "Test")) 
     
-    if (input$FDecks_metric_ui != "All") {
-      res <- res %>% filter(`Test Type` == input$FDecks_metric_ui)
+    if (input$FDecks_test_ui != "All") {
+      res <- res %>% filter(Test_Type == input$FDecks_test_ui)
     }
     
     res <- res %>% 
@@ -777,7 +759,7 @@ server <- function(input, output, session) {
     
     plot_ly(data) %>%
       add_bars(x = ~Metric_Wrapped, 
-               y = ~value, 
+               y = ~Value, 
                color = ~Legend_Label,
                colors = pal) %>% 
       layout(
@@ -805,7 +787,7 @@ server <- function(input, output, session) {
     
     plot_ly(data) %>%
       add_bars(x = ~Metric_Wrapped, 
-               y = ~value, 
+               y = ~Value, 
                color = ~Legend_Label,
                colors = pal) %>% 
       layout(
@@ -819,7 +801,7 @@ server <- function(input, output, session) {
   
   output$FDecks_plot_right <- renderPlotly({
     data <- filtered_df_FDecks() %>% 
-      filter(Metric == "Jump Height (Flight Time)")
+      filter(Metric == "Max Jump Height (Flight Time)")
     req(nrow(data) > 0)
     
     all_labels <- unique(data$Legend_Label)
@@ -832,7 +814,7 @@ server <- function(input, output, session) {
     
     plot_ly(data) %>%
       add_bars(x = ~Metric_Wrapped, 
-               y = ~value, 
+               y = ~Value, 
                color = ~Legend_Label,
                colors = pal) %>% 
       layout(

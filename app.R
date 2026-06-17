@@ -8,6 +8,7 @@ library(smartabaseR)
 library(plotly)
 library(shinyWidgets)
 library(shinydashboard)
+library(DBI)
 
 ################################################################################
 
@@ -124,12 +125,14 @@ df_msk <- bind_rows(df_MSK, MSK_gender_means)
 # Step 4: Force Decks Trials
 
 # Connect to NSWIS Database #
+username_db <- Sys.getenv("username")
+password_db <-  Sys.getenv("password")
 mydb <- DBI::dbConnect(odbc::odbc(),
-                       Driver = "SQL Server",
+                       Driver = "ODBC Driver 18 for SQL Server",
                        Server = "nswis-sql201701",
                        Database = "nswis_dw",
-                       UID = "Damien",
-                       PWD = "@9e%F261coHy",
+                       UID = username_db,
+                       PWD = password_db,
                        Port = 1433)
 DBdirectory <- "dbo"
 

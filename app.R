@@ -183,7 +183,7 @@ ui <- dashboardPage(
   dashboardHeader(title = "Rowing Dashboard", titleWidth = 230),
   dashboardSidebar(width = 230,
                    sidebarMenu(
-                     img(src="nswis_logo.jpg", width = "100%"),
+                     img(src="www/<nswis_logo.jpg>", width = "100%"),
                      selectizeInput("club_ui", label = "Club", choices = ""),
                      hr(),
                      selectizeInput("athlete_ui", label = "Athlete", choices = "")

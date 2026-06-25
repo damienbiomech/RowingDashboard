@@ -12,6 +12,8 @@ library(smartabaseR)
 
 cDir <- '/srv/shiny-server'
 
+shiny::addResourcePath('www', '/srv/shiny-server/www')
+
 options(shiny.host = '0.0.0.0')
 options(shiny.port = 80)
 
@@ -183,7 +185,7 @@ ui <- dashboardPage(
   dashboardHeader(title = "Rowing Dashboard", titleWidth = 230),
   dashboardSidebar(width = 230,
                    sidebarMenu(
-                     img(src="nswis_logo.jpg", width = "100%"),
+                     img(src="www/nswis_logo.jpg", width = "100%"),
                      selectizeInput("club_ui", label = "Club", choices = ""),
                      hr(),
                      selectizeInput("athlete_ui", label = "Athlete", choices = "")

@@ -1,0 +1,87 @@
+Gender,Test,Tier,Power,Time_or_Split,OrangeLow,OrangeHigh
+Male,2000,Junior,449,06:08.1,,
+Male,5000,Junior,367,16:24.3,,
+Male,30minR20,Junior,295,01:45.9,,
+Male,2mmol,Junior,280,01:47.7,,
+Male,4mmol,Junior,320,01:43.0,,
+Male,2000,U21,480,06:00.0,,
+Male,5000,U21,380,16:13.0,,
+Male,30minR20,U21,316,01:43.5,,
+Male,2mmol,U21,300,01:45.3,,
+Male,4mmol,U21,345,01:40.5,,
+Male,2000,U23,488,05:58.0,,
+Male,5000,U23,399,15:57.3,,
+Male,30minR20,U23,338,01:41.2,,
+Male,2mmol,U23,320,01:43.0,,
+Male,4mmol,U23,370,01:38.2,,
+Male,2000,Senior,532,05:47.9,,
+Male,5000,Senior,435,15:30.1,,
+Male,30minR20,Senior,374,01:37.8,,
+Male,2mmol,Senior,330,01:42.0,,
+Male,4mmol,Senior,390,01:36.5,,
+Female,2000,Junior,292,07:04.9,,
+Female,5000,Junior,249,18:40.2,,
+Female,30minR20,Junior,228,01:55.4,,
+Female,2mmol,Junior,200,02:00.5,,
+Female,4mmol,Junior,230,01:55.0,,
+Female,2000,U21,302,07:00.2,,
+Female,5000,U21,259,18:25.6,,
+Female,30minR20,U21,237,01:53.9,,
+Female,2mmol,U21,215,01:57.6,,
+Female,4mmol,U21,250,01:51.9,,
+Female,2000,U23,313,06:55.2,,
+Female,5000,U23,269,18:11.7,,
+Female,30minR20,U23,246,01:52.5,,
+Female,2mmol,U23,225,01:55.9,,
+Female,4mmol,U23,265,01:49.7,,
+Female,2000,Senior,350,06:40.0,,
+Female,5000,Senior,293,17:41.0,,
+Female,30minR20,Senior,265,01:49.7,,
+Female,2mmol,Senior,235,01:54.2,,
+Female,4mmol,Senior,275,01:48.4,,
+Male,Prone Endurance,,,,90,150
+Male,Supine Endurance,,,,90,150
+Male,Left Side Hold,,,,60,90
+Male,Right Side Hold,,,,60,90
+Female,Prone Endurance,,,,90,150
+Female,Supine Endurance,,,,90,150
+Female,Left Side Hold,,,,60,90
+Female,Right Side Hold,,,,60,90
+Male,Clean,,,,110,115
+Male,Squat,,,,140,150
+Male,Deadlift,,,,155,165
+Male,Pull/ Chin Ups,,,,28,35
+Male,Bench Pull,,,,95,105
+Male,Bench Press,,,,90,100
+Female,Clean,,,,72,80
+Female,Squat,,,,103,115
+Female,Deadlift,,,,117,130
+Female,Pull/ Chin Ups,,,,12,18
+Female,Bench Pull,,,,70,78
+Female,Bench Press,,,,61,68
+Male,Thoracic Rotation,,,,45,60
+Male,Active Slump,,,,-40,-20
+Male,Thomas Hip Extension,,,,-5,5
+Male,Hip Flexion,,,,110,130
+Male,Hip Internal Rotation,,,,10,25
+Male,Active Knee Extension,,,,-30,-10
+Male,Ankle Dorsiflexion,,,,6,12
+Male,Sit & Reach,,,,0,10
+Male,Long Sit Rockover,,,,0,10
+Female,Thoracic Rotation,,,,45,60
+Female,Active Slump,,,,-40,-20
+Female,Thomas Hip Extension,,,,-5,5
+Female,Hip Flexion,,,,110,130
+Female,Hip Internal Rotation,,,,10,25
+Female,Active Knee Extension,,,,-30,-10
+Female,Ankle Dorsiflexion,,,,6,12
+Female,Sit & Reach,,,,0,10
+Female,Long Sit Rockover,,,,0,10
+Male,Concentric Mean Force,,,,1000,1500
+Male,Concentric Peak Force,,,,1000,1500
+Female,Concentric Mean Force,,,,900,1300
+Female,Concentric Peak Force,,,,900,1300
+Male,Concentric Impulse,,,,200,280
+Female,Concentric Impulse,,,,100,180
+Male,Max Jump Height (Flight Time),,,,30,38
+Female,Max Jump Height (Flight Time),,,,25,30

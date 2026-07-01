@@ -27,7 +27,7 @@ dataset_id = "90c3600"
 
 ###############################################################################
 
-### Import Data Files ###
+### Import Local Data Files ###
 
 ## Load Athlete & Club list ##
 filename = 'Athlete_list.csv'
@@ -66,7 +66,7 @@ benchmark_lookup <- fread(I(resp_body_string(resp)))
 #benchmark_lookup <- read.csv("./benchmarks.csv")
 
 
-### Import Data ###
+### Import Database Data ###
 
 ## AMS Download ##
 

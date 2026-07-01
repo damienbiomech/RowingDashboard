@@ -19,8 +19,25 @@ options(shiny.port = 80)
 
 ################################################################################
 
+headers <- c('X-api-key' = Sys.getenv('LUDIS_API_TOKEN'))
+LUDIS_KEY <- Sys.getenv("LUDIS_API_TOKEN")
+dataset_id = "996a9c5"
+
+###############################################################################
+
+### Import Data Files ###
+
+## Read mocap timeseries Data ##
+filename = 'Athlete_list.csv'
+url_file  <- sprintf(
+  "https://prod-backend.ludisanalytics.com/v2/api/ludisurl/%s?filePath=%s", dataset_id, filename)
+resp <- request(url_file) |>
+req_headers(`x-api-key` = LUDIS_KEY) |>
+req_perform()
+Club_list <- fread(I(resp_body_string(resp)))
+
 # Load Athlete & Club list #
-Club_list <- read.csv("./Athlete_list.csv")
+#Club_list <- read.csv("./Athlete_list.csv")
 
 # Load Benchmarks Data & Physiology Data #
 db <- fread("./Athlete Profile_DB.csv") %>%

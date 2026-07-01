@@ -10,6 +10,7 @@ library(shinydashboard)
 library(DBI)
 library(smartabaseR)
 library(httr2)
+library(readr)
 
 ################################################################################
 

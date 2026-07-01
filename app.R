@@ -317,6 +317,9 @@ server <- function(input, output, session) {
     updateSelectizeInput(session, "athlete_ui", choices = athlete_choices, server = TRUE)
   })
   
+  
+  ### Trunk ###
+  
   filtered_df_trunk <- reactive({
     req(input$athlete_ui, input$trunk_metric_ui)
     
@@ -350,6 +353,9 @@ server <- function(input, output, session) {
     return(res)
   })
   
+  
+  ### MSK ###
+  
   filtered_df_MSK <- reactive({
     req(input$athlete_ui, input$MSK_metric_ui)
     
@@ -362,7 +368,12 @@ server <- function(input, output, session) {
       filter(Athlete == input$athlete_ui | (Athlete == "Squad Mean" & Gender == ath_gender)) %>%
       pivot_longer(cols = -c("Date","Athlete","Club","Gender"),
                    names_to = "Metric", values_to = "value") %>%
-      mutate(Legend_Label = paste(Athlete, ifelse(is.na(Date), "", as.character(Date)), sep = "<br>"))
+      mutate(Legend_Label = paste(Athlete, ifelse(is.na(Date), "", as.character(Date)), sep = "<br>"),
+              Metric = Metric %>%
+                       sub(" (left|right)$", "", ., ignore.case = TRUE)) %>%
+              group_by(Date,Athlete,Club,Gender,Metric) %>%
+              summarise(across(where(is.numeric), \(x) mean(x, na.rm = TRUE))
+      )
     
     res <- res %>%
       left_join(benchmark_lookup %>% filter(Gender == ath_gender), 
@@ -380,6 +391,9 @@ server <- function(input, output, session) {
              Metric_Wrapped = gsub(" ", "<br>", Metric))
     return(res)
   })
+  
+  
+  ### Strength ###
   
   filtered_df_strength <- reactive({
     req(input$athlete_ui, input$strength_metric_ui)
@@ -411,6 +425,9 @@ server <- function(input, output, session) {
     return(res)
   })
   
+  
+   ### Force Decks ###
+   
   filtered_df_FDecks <- reactive({
     req(input$athlete_ui, input$FDecks_test_ui)
     
@@ -739,13 +756,26 @@ server <- function(input, output, session) {
     data <- filtered_df_MSK()
     req(nrow(data) > 0)
     
-    all_labels <- unique(data$Legend_Label)
-    athlete_labels <- all_labels[all_labels != "Squad Mean"]
+    # Get benchmark values safely now that we know data exists
+    tmp_low <- na.omit(data$OrangeLow)
+    tmp_high <- na.omit(data$OrangeHigh)
     
-    ath_colors <- colorRampPalette(c("#0073b7", "#66b3ff"))(length(athlete_labels))
+    # Handle fallback if benchmarks themselves are missing in lookup table
+    o_low  <- if (length(tmp_low)  > 0) as.numeric(tmp_low[1])  else 0
+    o_high <- if (length(tmp_high) > 0) as.numeric(tmp_high[1]) else 100
+    
+    all_labels <- unique(as.character(data$Legend_Label))
+    athlete_labels <- setdiff(all_labels, "Squad Mean")
+    ath_colors <- if (length(athlete_labels) > 0) colorRampPalette(c("#0073b7","#66b3ff"))(length(athlete_labels)) else character(0)
     
     pal <- c(ath_colors, "#999999")
     names(pal) <- c(athlete_labels, "Squad Mean")
+    
+    pal_vec <- pal[all_labels]
+    pal_vec[is.na(pal_vec)] <- "#999999"
+    buffer <- 10
+    min_y <- min(c((data$value - buffer), (o_low - buffer)), na.rm = TRUE)
+    max_y <- max(c((data$value + buffer), (o_high + buffer)), na.rm = TRUE)
     
     plot_ly(data) %>%
       add_bars(x = ~Metric_Wrapped, 
@@ -753,10 +783,18 @@ server <- function(input, output, session) {
                color = ~Legend_Label,
                colors = pal) %>% 
       layout(
-        yaxis = list(title = "Score"),
+        yaxis = list(title = "Score", range=c(min_y,max_y)),
         xaxis = list(tickangle = 0, automargin = TRUE, title = "", type = "category"),
         barmode = 'group',
-        legend = list(orientation = "v")
+        legend = list(orientation = "v"),
+        shapes = if (input$MSK_metric_ui == "All") list() else list(
+          list(type = "rect", layer = "below", fillcolor = "rgba(0,255,0,0.2)", line = list(width = 0),
+               x0 = 0, x1 = 1, xref = "paper", yref = "y", y0 = o_high, y1 = max_y),
+          list(type = "rect", layer = "below", fillcolor = "rgba(255,165,0,0.2)", line = list(width = 0),
+               x0 = 0, x1 = 1, xref = "paper", yref = "y", y0 = o_low, y1 = o_high),
+          list(type = "rect", layer = "below", fillcolor = "rgba(255,0,0,0.2)", line = list(width = 0),
+               x0 = 0, x1 = 1, xref = "paper", yref = "y", y0 = min_y, y1 = o_low)
+        )
       )
   })
   
@@ -764,13 +802,26 @@ server <- function(input, output, session) {
     data <- filtered_df_strength()
     req(nrow(data) > 0)
     
+    # Get benchmark values safely now that we know data exists
+    tmp_low <- na.omit(data$OrangeLow)
+    tmp_high <- na.omit(data$OrangeHigh)
+    
+    # Handle fallback if benchmarks themselves are missing in lookup table
+    o_low  <- if (length(tmp_low)  > 0) as.numeric(tmp_low[1])  else 0
+    o_high <- if (length(tmp_high) > 0) as.numeric(tmp_high[1]) else 100
+    
     all_labels <- unique(data$Legend_Label)
     athlete_labels <- all_labels[all_labels != "Squad Mean"]
-    
-    ath_colors <- colorRampPalette(c("#0073b7", "#66b3ff"))(length(athlete_labels))
+    ath_colors <- if (length(athlete_labels) > 0) colorRampPalette(c("#0073b7","#66b3ff"))(length(athlete_labels)) else character(0)
     
     pal <- c(ath_colors, "#999999")
     names(pal) <- c(athlete_labels, "Squad Mean")
+    
+    pal_vec <- pal[all_labels]
+    pal_vec[is.na(pal_vec)] <- "#999999"
+    buffer <- 10
+    min_y <- min(c((data$value - buffer), (o_low - buffer)), na.rm = TRUE)
+    max_y <- max(c((data$value + buffer), (o_high + buffer)), na.rm = TRUE)
     
     plot_ly(data) %>%
       add_bars(x = ~Metric, 
@@ -778,10 +829,18 @@ server <- function(input, output, session) {
                color = ~Legend_Label,
                colors = pal) %>% 
       layout(
-        yaxis = list(title = "Load (kg)"),
+        yaxis = list(title = "Load (kg)", range=c(min_y,max_y)),
         xaxis = list(title = "", type = "category"),
         barmode = 'group',
-        legend = list(orientation = "v")
+        legend = list(orientation = "v"),
+        shapes = if (input$strength_metric_ui == "All") list() else list(
+          list(type = "rect", layer = "below", fillcolor = "rgba(0,255,0,0.2)", line = list(width = 0),
+               x0 = 0, x1 = 1, xref = "paper", yref = "y", y0 = o_high, y1 = max_y),
+          list(type = "rect", layer = "below", fillcolor = "rgba(255,165,0,0.2)", line = list(width = 0),
+               x0 = 0, x1 = 1, xref = "paper", yref = "y", y0 = o_low, y1 = o_high),
+          list(type = "rect", layer = "below", fillcolor = "rgba(255,0,0,0.2)", line = list(width = 0),
+               x0 = 0, x1 = 1, xref = "paper", yref = "y", y0 = min_y, y1 = o_low)
+        )
       )
   })
   

@@ -16,6 +16,8 @@ library(readr)
 
 # Helpers #
 
+require(httr)
+
 cDir <- '/srv/shiny-server'
 
 shiny::addResourcePath('www', '/srv/shiny-server/www')

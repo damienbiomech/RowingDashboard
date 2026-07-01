@@ -8,4 +8,4 @@ Teamworksapp/smartabaseR
 shinyWidgets
 shinydashboard
 DBI
-httr
+httr2

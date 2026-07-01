@@ -54,4 +54,5 @@ R -e "devtools::install_github(
 )"
 R -e "install.packages('mongolite')";
 R -e "install.packages('DBI')";
+R -e "install.packages('httr2')";
 

@@ -25,10 +25,10 @@ shiny::addResourcePath('www', '/srv/shiny-server/www')
 options(shiny.host = '0.0.0.0')
 options(shiny.port = 80)
 
-headers <- c('X-api-key' = Sys.getenv('LUDIS_API_TOKEN'))
-LUDIS_KEY <- Sys.getenv("LUDIS_API_TOKEN")
-dataset_id = "90c3600"
-print(LUDIS_KEY)
+#headers <- c('X-api-key' = Sys.getenv('LUDIS_API_TOKEN'))
+#LUDIS_KEY <- Sys.getenv("LUDIS_API_TOKEN")
+#dataset_id = "90c3600"
+#print(LUDIS_KEY)
 
 ###############################################################################
 

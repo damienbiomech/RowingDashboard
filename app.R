@@ -113,15 +113,16 @@ AMS_Strength <- sb_get_event(form = "NSWIS - Rowing - Strength Testing",
 
 df_strength <- AMS_Strength %>% rename(Athlete = about) %>% 
   mutate(Date = as.Date(start_date, format = "%d/%m/%Y")) %>% 
-  select(Date, Athlete, `Squat (kg)`,`Bench Pull (kg)`,`Deadlift (kg)`,`Bench Press (kg)`)
+  select(Date, Athlete, `Squat (kg)`,`Bench Pull (kg)`,`Deadlift (kg)`,`Bench Press (kg)`,`Pull/ Chin Ups (reps)`)
 df_strength <- left_join(df_strength, Club_list, by = "Athlete") %>% 
   dplyr::filter(!is.na(Club)) %>% 
-  rename_with(~ gsub(" \\(kg\\)", "", .))
+  rename_with(~ gsub(" \\(kg\\)", "", .)) %>% 
+  rename_with(~ gsub(" \\(reps\\)", "", .))
 
 strength_gender_means <- df_strength %>%
   group_by(Gender) %>%
   summarise(
-    across(c(Squat, `Bench Pull`, Deadlift, `Bench Press`), \(x) mean(x, na.rm = TRUE)),
+    across(c(Squat, `Bench Pull`, Deadlift, `Bench Press`,`Pull/ Chin Ups`), \(x) mean(x, na.rm = TRUE)),
     Athlete = "Squad Mean",
     Date = as.Date(NA))
 
@@ -264,7 +265,7 @@ ui <- dashboardPage(
                h4(),
                box(title = "Strength Metrics", status = "warning", solidHeader = TRUE, width = 10,
                    selectInput("strength_metric_ui", "Select Metric:", 
-                               choices = c("All", "Squat", "Bench Pull", "Deadlift", "Bench Press"),
+                               choices = c("All", "Squat", "Bench Pull", "Deadlift", "Bench Press", "Pull/ Chin Ups"),
                                selected = "All")),
                box(title = "Profile", status = "primary", 
                    solidHeader = TRUE, collapsible = TRUE, 

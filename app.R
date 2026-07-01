@@ -9,6 +9,7 @@ library(shinyWidgets)
 library(shinydashboard)
 library(DBI)
 library(smartabaseR)
+library(httr)
 
 ################################################################################
 

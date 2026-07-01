@@ -34,6 +34,7 @@ dataset_id = "90c3600"
 filename = 'Athlete_list.csv'
 url_file  <- sprintf(
   "https://prod-backend.ludisanalytics.com/v2/api/ludisurl/%s?filePath=%s", dataset_id, filename)
+print(url_file)
 resp <- request(url_file) |>
 req_headers(`x-api-key` = LUDIS_KEY) |>
 req_perform()

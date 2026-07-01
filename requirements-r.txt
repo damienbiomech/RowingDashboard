@@ -9,3 +9,4 @@ shinyWidgets
 shinydashboard
 DBI
 httr2
+readr

@@ -29,7 +29,7 @@ options(shiny.port = 80)
 #print(LUDIS_KEY)
 
 ###############################################################################
-\
+
 ### Import Local Data Files ###
 
 ## Load Athlete & Club list ##

@@ -934,16 +934,30 @@ server <- function(input, output, session) {
   
   output$FDecks_plot_right <- renderPlotly({
     data <- filtered_df_FDecks() %>% 
-      filter(Metric == "Max Jump Height (Flight Time)")
+      filter(Metric == "Max Jump Height (Flight Time)") %>%
+      group_by(Legend_Label,Metric_Wrapped) %>%
+      summarise(across(where(is.numeric), \(x) mean(x, na.rm = TRUE)))
+      
     req(nrow(data) > 0)
+    
+    # Get benchmark values safely now that we know data exists
+    tmp_low <- na.omit(data$OrangeLow)
+    tmp_high <- na.omit(data$OrangeHigh)
+    
+    # Handle fallback if benchmarks themselves are missing in lookup table
+    o_low  <- if (length(tmp_low)  > 0) as.numeric(tmp_low[1])  else 0
+    o_high <- if (length(tmp_high) > 0) as.numeric(tmp_high[1]) else 100
     
     all_labels <- unique(data$Legend_Label)
     athlete_labels <- all_labels[all_labels != "Squad Mean"]
-    
-    ath_colors <- colorRampPalette(c("#0073b7", "#66b3ff"))(length(athlete_labels))
+    ath_colors <- if (length(athlete_labels) > 0) colorRampPalette(c("#0073b7","#66b3ff"))(length(athlete_labels)) else character(0)
     
     pal <- c(ath_colors, "#999999")
     names(pal) <- c(athlete_labels, "Squad Mean")
+    
+    buffer <- 10
+    min_y <- min(c((data$Value - buffer), (o_low - buffer)), na.rm = TRUE)
+    max_y <- max(c((data$Value + buffer), (o_high + buffer)), na.rm = TRUE)
     
     plot_ly(data) %>%
       add_bars(x = ~Metric_Wrapped, 
@@ -951,7 +965,7 @@ server <- function(input, output, session) {
                color = ~Legend_Label,
                colors = pal) %>% 
       layout(
-        yaxis = list(title = "Height [cm]"),
+        yaxis = list(title = "Height [cm]", range = c(min_y,max_y)),
         xaxis = list(title = "", type = "category"),
         barmode = 'group',
         legend = list(orientation = "v",

@@ -41,7 +41,6 @@ resp <- request(url_file) |>
 req_headers(`x-api-key` = LUDIS_KEY) |>
 req_perform()
 Club_list <- fread(I(resp_body_string(resp)))
-
 #Club_list <- read.csv("./Athlete_list.csv")
 
 ## Load Benchmarks Data & Physiology Data ##

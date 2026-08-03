@@ -114,7 +114,7 @@ AMS_Strength <- sb_get_event(form = "NSWIS - Rowing - Strength Testing",
                              password = ams_pw,
                              filter = sb_get_event_filter(
                                user_key = "about",
-                               user_value = Club_list$Athlete
+                               user_value = Club_list$Name
                              ))
 
 df_strength <- AMS_Strength %>% rename(Athlete = about) %>% 
@@ -143,7 +143,7 @@ AMS_MSK <- sb_get_event(form = "Rowing - MSK Screening",
                         password = ams_pw,
                         filter = sb_get_event_filter(
                           user_key = "about",
-                          user_value = Club_list$Athlete
+                          user_value = Club_list$Name
                         ))
 
 df_MSK <- AMS_MSK %>% rename(Athlete = about) %>% 
@@ -186,18 +186,18 @@ Col_list <- "about, start_date, Test_Type, Metric, Value"
 query <- paste0("SELECT ",Col_list," FROM ",DBdirectory, ".Force_Decks_Flow")
 
 df_FDecks <- DBI::dbGetQuery(mydb,query) %>% 
-  dplyr::filter(about %in% Club_list$Athlete) %>%
-  rename(Athlete = about) %>%
+  dplyr::filter(about %in% Club_list$Name) %>%
+  rename(Name = about) %>%
   mutate(Date = as.Date(start_date, format = "%d/%m/%Y")) %>%
   fill(`Test_Type`, .direction = "down")
 
-df_FDecks <- left_join(df_FDecks, Club_list, by = "Athlete") %>%
+df_FDecks <- left_join(df_FDecks, Club_list, by = "Name") %>%
   dplyr::filter(!is.na(Club))
 
 FDecks_gender_means <- df_FDecks %>%
   group_by(Gender,Test_Type,Metric) %>%
   summarise(across(where(is.numeric), \(x) mean(x, na.rm = TRUE)),
-            Athlete = "Squad Mean",
+            Name = "Squad Mean",
             Date = as.Date(NA), .groups = "drop_last") %>%
   dplyr::filter(!is.na(Value)) %>%
   dplyr::filter(!is.na(Test_Type))
@@ -211,8 +211,8 @@ df_FDecks <- bind_rows(df_FDecks, FDecks_gender_means)
 query <- paste0("SELECT * FROM ",DBdirectory, ".BridgeAthletic_Questionnaire")
 
 df_Bridge <- DBI::dbGetQuery(mydb,query) %>% 
-  dplyr::filter(about %in% Club_list$Athlete) %>% 
-  rename(Athlete = about) %>%
+  dplyr::filter(about %in% Club_list$Name) %>% 
+  rename(Name = about) %>%
   mutate(Date = as.Date(`Date of Data`, format = "%Y-%m-%d"))
 
 ################################################################################

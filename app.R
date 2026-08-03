@@ -88,7 +88,7 @@ AMS_Trunk <- sb_get_event(form = "NSWIS - Rowing - Trunk Testing",
                           password = ams_pw,
                           filter = sb_get_event_filter(
                             user_key = "about",
-                            user_value = Club_list$Athlete
+                            user_value = Club_list$Name
                           ))
 
 df_trunk <- AMS_Trunk %>% rename(Athlete = about) %>% 

@@ -45,31 +45,31 @@ Club_list <- fread(I(resp_body_string(resp)))
 #Club_list <- read.csv("./Athlete_list.csv")
 
 ## Load Benchmarks Data & Physiology Data ##
-#filename = 'Athlete Profile_DB.csv'
-#url_file  <- sprintf(
-#  "https://prod-backend.ludisanalytics.com/v2/api/ludisurl/%s?filePath=%s", dataset_id, filename)
-#resp <- request(url_file) |>
-#req_headers(`x-api-key` = LUDIS_KEY) |>
-#req_perform()
-#db <- fread(I(resp_body_string(resp)))
+filename = 'Athlete Profile_DB.csv'
+url_file  <- sprintf(
+  "https://prod-backend.ludisanalytics.com/v2/api/ludisurl/%s?filePath=%s", dataset_id, filename)
+resp <- request(url_file) |>
+req_headers(`x-api-key` = LUDIS_KEY) |>
+req_perform()
+db <- fread(I(resp_body_string(resp)))
+#db <- fread("./Athlete Profile_DB.csv") 
 
-db <- fread("./Athlete Profile_DB.csv") 
 db <- db %>% mutate(Date = as.Date(Date))
-db <- left_join(db, Club_list, by = "Athlete", suffix = c("", ".y")) %>% 
+db <- left_join(db, Club_list, by = "Name", suffix = c("", ".y")) %>% 
   mutate(Gender = coalesce(Gender, Gender.y)) %>%
   select(-Gender.y)
 
 setnames(db, names(db), gsub(" ", "_", names(db)))
 
 ## Load RA Benchmarks ##
-#filename = 'benchmarks.csv',
-#url_file  <- sprintf(
-#  "https://prod-backend.ludisanalytics.com/v2/api/ludisurl/%s?filePath=%s", dataset_id, filename)
-#resp <- request(url_file) |>
-#req_headers(`x-api-key` = LUDIS_KEY) |>
-#req_perform()
-#benchmark_lookup <- fread(I(resp_body_string(resp)))
-benchmark_lookup <- read.csv("./benchmarks.csv")
+filename = 'benchmarks.csv',
+url_file  <- sprintf(
+  "https://prod-backend.ludisanalytics.com/v2/api/ludisurl/%s?filePath=%s", dataset_id, filename)
+resp <- request(url_file) |>
+req_headers(`x-api-key` = LUDIS_KEY) |>
+req_perform()
+benchmark_lookup <- fread(I(resp_body_string(resp)))
+#benchmark_lookup <- read.csv("./benchmarks.csv")
 
 
 ### Import Database Data ###

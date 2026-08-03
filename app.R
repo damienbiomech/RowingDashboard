@@ -92,7 +92,7 @@ AMS_Trunk <- sb_get_event(form = "NSWIS - Rowing - Trunk Testing",
 
 df_trunk <- AMS_Trunk %>% rename(Name = about) %>% 
   mutate(Date = as.Date(start_date, format = "%d/%m/%Y")) %>% 
-  select(Date, Athlete,`Prone Endurance`,`Supine Endurance`,
+  select(Date, Name,`Prone Endurance`,`Supine Endurance`,
          `Left Side Hold`,`Right Side Hold`)
 df_trunk <- left_join(df_trunk, Club_list, by = "Name")
 
@@ -118,7 +118,7 @@ AMS_Strength <- sb_get_event(form = "NSWIS - Rowing - Strength Testing",
 
 df_strength <- AMS_Strength %>% rename(Name = about) %>% 
   mutate(Date = as.Date(start_date, format = "%d/%m/%Y")) %>% 
-  select(Date, Athlete, `Squat (kg)`,`Bench Pull (kg)`,`Deadlift (kg)`,`Bench Press (kg)`,`Pull/ Chin Ups (reps)`)
+  select(Date, Name, `Squat (kg)`,`Bench Pull (kg)`,`Deadlift (kg)`,`Bench Press (kg)`,`Pull/ Chin Ups (reps)`)
 df_strength <- left_join(df_strength, Club_list, by = "Name") %>% 
   dplyr::filter(!is.na(Club)) %>% 
   rename_with(~ gsub(" \\(kg\\)", "", .)) %>% 
@@ -128,7 +128,7 @@ strength_gender_means <- df_strength %>%
   group_by(Gender) %>%
   summarise(
     across(c(Squat, `Bench Pull`, Deadlift, `Bench Press`,`Pull/ Chin Ups`), \(x) mean(x, na.rm = TRUE)),
-    Athlete = "Squad Mean",
+    Name = "Squad Mean",
     Date = as.Date(NA))
 
 df_strength <- bind_rows(df_strength, strength_gender_means)
@@ -147,7 +147,7 @@ AMS_MSK <- sb_get_event(form = "Rowing - MSK Screening",
 
 df_MSK <- AMS_MSK %>% rename(Name = about) %>% 
   mutate(Date = as.Date(start_date, format = "%d/%m/%Y")) %>% 
-  select(Date, Athlete, starts_with(c("Thoracic Rotation","Active Slump",
+  select(Date, Name, starts_with(c("Thoracic Rotation","Active Slump",
                                       "Thomas Hip","Hip Flexion Left",
                                       "Hip Flexion Right","Hip Internal Rotation",
                                       "Active Knee","Ankle Dorsiflexion",
@@ -159,7 +159,7 @@ df_MSK <- left_join(df_MSK, Club_list, by = "Name") %>%
 MSK_gender_means <- df_MSK %>%
   group_by(Gender) %>%
   summarise(across(where(is.numeric), \(x) mean(x, na.rm = TRUE)),
-            Athlete = "Squad Mean",
+            Name = "Squad Mean",
             Date = as.Date(NA))
 
 df_msk <- bind_rows(df_MSK, MSK_gender_means)
@@ -318,7 +318,7 @@ server <- function(input, output, session) {
   
   observe({
     req(filtered_db())
-    athlete_choices <- sort(unique(filtered_db()$Athlete))
+    athlete_choices <- sort(unique(filtered_db()$Name))
     updateSelectizeInput(session, "athlete_ui", choices = athlete_choices, server = TRUE)
   })
   
@@ -329,16 +329,16 @@ server <- function(input, output, session) {
     req(input$athlete_ui, input$trunk_metric_ui)
     
     ath_gender <- db %>% 
-      filter(Athlete == input$athlete_ui) %>% 
+      filter(Name == input$athlete_ui) %>% 
       pull(Gender) %>% 
       unique()
     
     res <- df_trunk %>% 
-      filter(Athlete == input$athlete_ui | (Athlete == "Squad Mean" & Gender == ath_gender)) %>%
+      filter(Name == input$athlete_ui | (Name == "Squad Mean" & Gender == ath_gender)) %>%
       pivot_longer(cols = c(`Prone Endurance`, `Supine Endurance`, 
                             `Left Side Hold`, `Right Side Hold`),
                    names_to = "Metric", values_to = "value") %>%
-      mutate(Legend_Label = paste(Athlete, ifelse(is.na(Date), "", as.character(Date)), sep = "<br>"))
+      mutate(Legend_Label = paste(Name, ifelse(is.na(Date), "", as.character(Date)), sep = "<br>"))
     
     res <- res %>% 
       left_join(benchmark_lookup %>% 
@@ -349,8 +349,8 @@ server <- function(input, output, session) {
     }
     
     res <- res %>% 
-      mutate(Legend_Label = ifelse(Athlete == "Squad Mean", "Squad Mean",
-                                   paste(Athlete, ifelse(is.na(Date), "", 
+      mutate(Legend_Label = ifelse(Name == "Squad Mean", "Squad Mean",
+                                   paste(Name, ifelse(is.na(Date), "", 
                                                          as.character(Date)), 
                                          sep = "<br>")),
              Metric_Wrapped = gsub(" ", "<br>", Metric))
@@ -365,18 +365,18 @@ server <- function(input, output, session) {
     req(input$athlete_ui, input$MSK_metric_ui)
     
     ath_gender <- db %>% 
-      filter(Athlete == input$athlete_ui) %>% 
+      filter(Name == input$athlete_ui) %>% 
       pull(Gender) %>% 
       unique()
     
     res <- df_MSK %>% 
-      filter(Athlete == input$athlete_ui | (Athlete == "Squad Mean" & Gender == ath_gender)) %>%
-      pivot_longer(cols = -c("Date","Athlete","Club","Gender"),
+      filter(Name == input$athlete_ui | (Name == "Squad Mean" & Gender == ath_gender)) %>%
+      pivot_longer(cols = -c("Date","Name","Club","Gender"),
                    names_to = "Metric", values_to = "value") %>%
-      mutate(Legend_Label = paste(Athlete, ifelse(is.na(Date), "", as.character(Date)), sep = "<br>"),
+      mutate(Legend_Label = paste(Name, ifelse(is.na(Date), "", as.character(Date)), sep = "<br>"),
               Metric = Metric %>%
                        sub(" (left|right)$", "", ., ignore.case = TRUE)) %>%
-              group_by(Date,Athlete,Club,Gender,Metric) %>%
+              group_by(Date,Name,Club,Gender,Metric) %>%
               summarise(across(where(is.numeric), \(x) mean(x, na.rm = TRUE))
       )
     
@@ -389,8 +389,8 @@ server <- function(input, output, session) {
     }
     
     res <- res %>% 
-      mutate(Legend_Label = ifelse(Athlete == "Squad Mean", "Squad Mean",
-                                   paste(Athlete, ifelse(is.na(Date), "", 
+      mutate(Legend_Label = ifelse(Name == "Squad Mean", "Squad Mean",
+                                   paste(Name, ifelse(is.na(Date), "", 
                                                          as.character(Date)), 
                                          sep = "<br>")),
              Metric_Wrapped = gsub(" ", "<br>", Metric))
@@ -404,15 +404,15 @@ server <- function(input, output, session) {
     req(input$athlete_ui, input$strength_metric_ui)
     
     ath_gender <- db %>% 
-      filter(Athlete == input$athlete_ui) %>% 
+      filter(Name == input$athlete_ui) %>% 
       pull(Gender) %>% 
       unique()
     
     res <- df_strength %>% 
-      filter(Athlete == input$athlete_ui | (Athlete == "Squad Mean" & Gender == ath_gender)) %>%
+      filter(Name == input$athlete_ui | (Name == "Squad Mean" & Gender == ath_gender)) %>%
       pivot_longer(cols = c(`Squat`, `Bench Pull`, `Deadlift`, `Bench Press`),
                    names_to = "Metric", values_to = "value") %>%
-      mutate(Legend_Label = paste(Athlete, ifelse(is.na(Date), "", as.character(Date)), sep = "<br>"))
+      mutate(Legend_Label = paste(Name, ifelse(is.na(Date), "", as.character(Date)), sep = "<br>"))
     
     res <- res %>%
       left_join(benchmark_lookup %>% filter(Gender == ath_gender), 
@@ -423,8 +423,8 @@ server <- function(input, output, session) {
     }
     
     res <- res %>% 
-      mutate(Legend_Label = ifelse(Athlete == "Squad Mean", "Squad Mean",
-                                   paste(Athlete, ifelse(is.na(Date), "", 
+      mutate(Legend_Label = ifelse(Name == "Squad Mean", "Squad Mean",
+                                   paste(Name, ifelse(is.na(Date), "", 
                                                          as.character(Date)), 
                                          sep = "<br>")))
     return(res)
@@ -437,13 +437,13 @@ server <- function(input, output, session) {
     req(input$athlete_ui, input$FDecks_test_ui)
     
     ath_gender <- db %>% 
-      filter(Athlete == input$athlete_ui) %>% 
+      filter(Name == input$athlete_ui) %>% 
       pull(Gender) %>% 
       unique()
     
     res <- df_FDecks %>% 
-      filter(Athlete == input$athlete_ui | (Athlete == "Squad Mean" & Gender == ath_gender)) %>%
-      mutate(Legend_Label = paste(Athlete, ifelse(is.na(Date), "", 
+      filter(Name == input$athlete_ui | (Name == "Squad Mean" & Gender == ath_gender)) %>%
+      mutate(Legend_Label = paste(Name, ifelse(is.na(Date), "", 
                                                   as.character(Date)), 
                                   Test_Type, sep = "<br>"))
     
@@ -456,8 +456,8 @@ server <- function(input, output, session) {
     }
     
     res <- res %>% 
-      mutate(Legend_Label = ifelse(Athlete == "Squad Mean", "Squad Mean",
-                                   paste(Athlete, ifelse(is.na(Date), "", 
+      mutate(Legend_Label = ifelse(Name == "Squad Mean", "Squad Mean",
+                                   paste(Name, ifelse(is.na(Date), "", 
                                                          as.character(Date)), 
                                          sep = "<br>")),
              Metric_Wrapped = gsub(" ", "<br>", Metric))
@@ -474,32 +474,32 @@ server <- function(input, output, session) {
     selected_athlete <- input$athlete_ui
     
     most_recent_profile_raw <- db %>%
-      filter(Athlete == selected_athlete) %>%
+      filter(Name == selected_athlete) %>%
       group_by(Test) %>%
       slice_max(order_by = Date, n = 1, with_ties = FALSE) %>%
       ungroup() %>%
-      select(Athlete, Gender, Date, Test, Name_Label, Power, Score, Time_or_Split) %>%
+      select(Name, Gender, Date, Test, Name_Label, Power, Score, Time_or_Split) %>%
       mutate(Test = as.character(Test))
     
     best_profile_raw <- db %>%
-      filter(Athlete == selected_athlete) %>%
+      filter(Name == selected_athlete) %>%
       group_by(Test) %>%
       slice_max(order_by = Score, n = 1, with_ties = FALSE) %>%
       ungroup() %>%
-      select(Athlete, Gender, Date, Test, Name_Label, Power, Score, Time_or_Split) %>%
+      select(Name, Gender, Date, Test, Name_Label, Power, Score, Time_or_Split) %>%
       mutate(Test = as.character(Test))
     
     test_template <- tibble(Test = test_order)
     
     selected_gender <- db %>%
-      filter(Athlete == selected_athlete) %>%
+      filter(Name == selected_athlete) %>%
       slice(1) %>%
       pull(Gender)
     
     most_recent_profile <- test_template %>%
       left_join(most_recent_profile_raw, by = "Test") %>%
       mutate(
-        Athlete = coalesce(Athlete, selected_athlete),
+        Name = coalesce(Name, selected_athlete),
         Gender = coalesce(Gender, selected_gender),
         Score = coalesce(Score, 0),
         Power = coalesce(Power, 0),
@@ -511,7 +511,7 @@ server <- function(input, output, session) {
     best_profile <- test_template %>%
       left_join(best_profile_raw, by = "Test") %>%
       mutate(
-        Athlete = coalesce(Athlete, selected_athlete),
+        Name = coalesce(Name, selected_athlete),
         Gender = coalesce(Gender, selected_gender),
         Score = coalesce(Score, 0),
         Power = coalesce(Power, 0),

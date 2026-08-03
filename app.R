@@ -90,11 +90,11 @@ AMS_Trunk <- sb_get_event(form = "NSWIS - Rowing - Trunk Testing",
                             user_value = Club_list$Name
                           ))
 
-df_trunk <- AMS_Trunk %>% rename(Athlete = about) %>% 
+df_trunk <- AMS_Trunk %>% rename(Name = about) %>% 
   mutate(Date = as.Date(start_date, format = "%d/%m/%Y")) %>% 
   select(Date, Athlete,`Prone Endurance`,`Supine Endurance`,
          `Left Side Hold`,`Right Side Hold`)
-df_trunk <- left_join(df_trunk, Club_list, by = "Athlete")
+df_trunk <- left_join(df_trunk, Club_list, by = "Name")
 
 gender_means <- df_trunk %>%
   group_by(Gender) %>%
@@ -116,10 +116,10 @@ AMS_Strength <- sb_get_event(form = "NSWIS - Rowing - Strength Testing",
                                user_value = Club_list$Name
                              ))
 
-df_strength <- AMS_Strength %>% rename(Athlete = about) %>% 
+df_strength <- AMS_Strength %>% rename(Name = about) %>% 
   mutate(Date = as.Date(start_date, format = "%d/%m/%Y")) %>% 
   select(Date, Athlete, `Squat (kg)`,`Bench Pull (kg)`,`Deadlift (kg)`,`Bench Press (kg)`,`Pull/ Chin Ups (reps)`)
-df_strength <- left_join(df_strength, Club_list, by = "Athlete") %>% 
+df_strength <- left_join(df_strength, Club_list, by = "Name") %>% 
   dplyr::filter(!is.na(Club)) %>% 
   rename_with(~ gsub(" \\(kg\\)", "", .)) %>% 
   rename_with(~ gsub(" \\(reps\\)", "", .))
@@ -145,7 +145,7 @@ AMS_MSK <- sb_get_event(form = "Rowing - MSK Screening",
                           user_value = Club_list$Name
                         ))
 
-df_MSK <- AMS_MSK %>% rename(Athlete = about) %>% 
+df_MSK <- AMS_MSK %>% rename(Name = about) %>% 
   mutate(Date = as.Date(start_date, format = "%d/%m/%Y")) %>% 
   select(Date, Athlete, starts_with(c("Thoracic Rotation","Active Slump",
                                       "Thomas Hip","Hip Flexion Left",
@@ -153,7 +153,7 @@ df_MSK <- AMS_MSK %>% rename(Athlete = about) %>%
                                       "Active Knee","Ankle Dorsiflexion",
                                       "Sit & Reach","Long Sit Rockover")))
 
-df_MSK <- left_join(df_MSK, Club_list, by = "Athlete") %>% 
+df_MSK <- left_join(df_MSK, Club_list, by = "Name") %>% 
   dplyr::filter(!is.na(Club))
 
 MSK_gender_means <- df_MSK %>%

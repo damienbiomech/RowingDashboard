@@ -33,15 +33,16 @@ print(LUDIS_KEY)
 ### Import Local Data Files ###
 
 ## Load Athlete & Club list ##
-#filename = 'Athlete_list.csv'
-#url_file  <- sprintf(
-#  "https://prod-backend.ludisanalytics.com/v2/api/ludisurl/%s?filePath=%s", dataset_id, filename)
-#print(url_file)
-#resp <- request(url_file) |>
-#req_headers(`x-api-key` = LUDIS_KEY) |>
-#req_perform()
-#Club_list <- fread(I(resp_body_string(resp)))
-Club_list <- read.csv("./Athlete_list.csv")
+filename = 'Athlete_list.csv'
+url_file  <- sprintf(
+  "https://prod-backend.ludisanalytics.com/v2/api/ludisurl/%s?filePath=%s", dataset_id, filename)
+print(url_file)
+resp <- request(url_file) |>
+req_headers(`x-api-key` = LUDIS_KEY) |>
+req_perform()
+Club_list <- fread(I(resp_body_string(resp)))
+
+#Club_list <- read.csv("./Athlete_list.csv")
 
 ## Load Benchmarks Data & Physiology Data ##
 #filename = 'Athlete Profile_DB.csv'

@@ -42,8 +42,6 @@ dataset_id = "5807bdd"
 #Club_list <- fread(I(resp_body_string(resp)))
 Club_list <- read.csv("./Athlete_list.csv") 
 
-Club_list <- Club_list %>% mutate(Name = Athlete)
-
 ## Load Benchmarks Data & Physiology Data ##
 #filename = 'Athlete Profile_DB.csv'
 #url_file  <- sprintf(

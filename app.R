@@ -40,8 +40,9 @@ dataset_id = "5807bdd"
 #req_headers(`x-api-key` = LUDIS_KEY) |>
 #req_perform()
 #Club_list <- fread(I(resp_body_string(resp)))
-Club_list <- read.csv("./Athlete_list.csv") %>% 
- mutate(Name = Athlete)
+Club_list <- read.csv("./Athlete_list.csv") 
+
+Club_list <- Club_list %>% mutate(Name = Athlete)
 
 ## Load Benchmarks Data & Physiology Data ##
 #filename = 'Athlete Profile_DB.csv'

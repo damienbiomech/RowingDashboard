@@ -1,5 +1,5 @@
-tidyverse
 shiny
+tidyverse
 plotly
 devtools
 Teamworksapp/smartabaseR

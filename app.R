@@ -69,7 +69,6 @@ setnames(db, names(db), gsub(" ", "_", names(db)))
 #benchmark_lookup <- fread(I(resp_body_string(resp)))
 benchmark_lookup <- read.csv("./benchmarks.csv")
 
-
 ### Import Database Data ###
 
 ## AMS Download ##

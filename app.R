@@ -1,9 +1,9 @@
 
 ### Rowing Dashboard ###
 
+library(shiny)
 library(tidyverse)
 library(plotly)
-library(shiny)
 library(shinyWidgets)
 library(shinydashboard)
 library(smartabaseR)

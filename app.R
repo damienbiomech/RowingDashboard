@@ -2,12 +2,10 @@
 ### Rowing Dashboard ###
 
 library(tidyverse)
-library(data.table)
 library(plotly)
 library(shiny)
 library(shinyWidgets)
 library(shinydashboard)
-library(DBI)
 library(smartabaseR)
 library(httr2)
 library(readr)

@@ -3,6 +3,7 @@
 
 library(shiny)
 library(tidyverse)
+library(data.table)
 library(plotly)
 library(shinyWidgets)
 library(shinydashboard)

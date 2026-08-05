@@ -1,6 +1,6 @@
-shiny
 tidyverse
 data.table
+shiny
 plotly
 remotes
 devtools

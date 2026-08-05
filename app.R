@@ -76,7 +76,7 @@ benchmark_lookup <- read.csv("./benchmarks.csv")
 #ams_un <- Sys.getenv("AMS_UN")
 #ams_pw <- Sys.getenv("AMS_PW")
 ams_un <- "damien.o'meara"
-ams_pw <- "Damien123"'
+ams_pw <- "Damien123"
 
 # Step 1: Trunk Testing #
 AMS_Trunk <- sb_get_event(form = "NSWIS - Rowing - Trunk Testing",

@@ -1,9 +1,9 @@
 tidyverse
 shiny
 plotly
-remotes
 devtools
 Teamworksapp/smartabaseR
 shinyWidgets
 shinydashboard
+readr
 httr2

@@ -7,6 +7,7 @@ library(shiny)
 library(shinyWidgets)
 library(shinydashboard)
 library(smartabaseR)
+library(data.table)
 library(httr2)
 library(readr)
 

@@ -1,10 +1,9 @@
 
 ### Rowing Dashboard ###
 
-library(shiny)
 library(tidyverse)
-library(data.table)
 library(plotly)
+library(shiny)
 library(shinyWidgets)
 library(shinydashboard)
 library(smartabaseR)
@@ -75,7 +74,6 @@ benchmark_lookup <- read.csv("./benchmarks.csv")
 # Credentials #
 ams_un <- Sys.getenv("AMS_UN")
 ams_pw <- Sys.getenv("AMS_PW")
-
 
 # Step 1: Trunk Testing #
 AMS_Trunk <- sb_get_event(form = "NSWIS - Rowing - Trunk Testing",
@@ -211,6 +209,64 @@ df_Bridge <- DBI::dbGetQuery(mydb,query) %>%
   dplyr::filter(about %in% Club_list$Name) %>% 
   rename(Name = about) %>%
   mutate(Date = as.Date(`Date of Data`, format = "%Y-%m-%d"))
+
+# Step 6: Biomechanics Data
+
+## Helpers ##
+
+Bins <- c(19.5,20.9,24,28,32,36,40,50)
+Bin_labels <- c("20","20-24","24-28","28-32","32-36","36-40",">40")
+Credentials <- fread("credentials.csv")
+User_ID = Credentials$User_ID[1]
+User_PWD = Credentials$User_PWD[1]
+
+## Load Boat Class & Age Group Means ##
+SBS_ave <- fread("./DB_ave.csv")
+
+## Query Database for Athlete SBS data ##
+
+# Connect to Database #
+mydb <- DBI::dbConnect(odbc::odbc(),
+                       Driver = "SQL Server",
+                       Server = "nswis-sql201701",
+                       Database = "RowingDB",
+                       UID = User_ID,
+                       PWD = User_PWD,
+                       Port = 1433)
+DBdirectory <- "rowing_new"
+
+## Query Database for Athlete, Session & Piece Data ##
+query <- paste0("SELECT AthleteId,Name FROM ",DBdirectory, ".Athlete")
+Athlete_list <- DBI::dbGetQuery(mydb,query)
+
+## Athlete Session Data ##
+query <- paste0("SELECT SessionId,AthleteId,Position FROM ",
+                DBdirectory, ".session_athlete")
+Session_Athlete <- DBI::dbGetQuery(mydb,query) %>%
+  rename(SeatPosition = Position)
+
+## Session Data ##
+query <- paste0("SELECT SessionId,Year,Month,Day,BoatClass,AgeGroup,Comments FROM ",
+                DBdirectory, ".Session")
+Session_data <- DBI::dbGetQuery(mydb,query)
+
+## Piece Data ##
+query <- paste0("SELECT SessionId,Rating,Pace,Comment,Wind,Stream FROM ",
+                DBdirectory, ".Piece")
+Piece_data <- DBI::dbGetQuery(mydb,query)
+
+## Merge DB Tables into a single Meta data Table ##
+Session_Athlete <- merge(Athlete_list,Session_Athlete,by='AthleteId')
+MetaData <- merge(Session_Athlete,Session_data,by='SessionId')
+MetaData <- merge(MetaData,Piece_data,by='SessionId')
+MetaData <- MetaData %>%
+  group_by(SessionId) %>%
+  mutate(Crew = paste(Name, collapse = ", ")) %>%
+  ungroup()
+MetaData <- MetaData %>% 
+  mutate(Rate.Bin = cut(Rating, breaks = Bins, labels = Bin_labels),
+         Date = make_date(year = Year, month = Month, day = Day))
+
 
 ################################################################################
 

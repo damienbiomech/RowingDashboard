@@ -221,13 +221,14 @@ SBS_ave <- fread("./DB_ave.csv")
 ## Query Database for Athlete SBS data ##
 
 # Connect to Database #
+ludis_ip <- Sys.getenv('ludis_ip')
 mydb <- DBI::dbConnect(odbc::odbc(),
-                       Driver = "SQL Server",
-                       Server = "nswis-sql201701",
+                       Driver = "ODBC Driver 18 for SQL Server",
+                       Server = ludis_ip,
                        Database = "RowingDB",
                        UID = username_db,
                        PWD = password_db,
-                       Port = 1433)
+                       TrustServerCertificate='yes')
 DBdirectory <- "rowing_new"
 
 ## Query Database for Athlete, Session & Piece Data ##

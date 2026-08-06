@@ -206,12 +206,12 @@ df_FDecks <- bind_rows(df_FDecks, FDecks_gender_means)
 # Step 5: Bridge Athletic Table #
 
 ## Query Database for Athlete & Session Data ##
-query <- paste0("SELECT * FROM ",DBdirectory, ".BridgeAthletic_Questionnaire")
+#query <- paste0("SELECT * FROM ",DBdirectory, ".BridgeAthletic_Questionnaire")
 
-df_Bridge <- DBI::dbGetQuery(mydb,query) %>% 
-  dplyr::filter(about %in% Club_list$Name) %>% 
-  rename(Name = about) %>%
-  mutate(Date = as.Date(`Date of Data`, format = "%Y-%m-%d"))
+#df_Bridge <- DBI::dbGetQuery(mydb,query) %>% 
+#  dplyr::filter(about %in% Club_list$Name) %>% 
+#  rename(Name = about) %>%
+#  mutate(Date = as.Date(`Date of Data`, format = "%Y-%m-%d"))
 
 # Step 6: Biomechanics Data
 

@@ -6,5 +6,4 @@ devtools
 Teamworksapp/smartabaseR
 shinyWidgets
 shinydashboard
-readr
-httr2
+scales

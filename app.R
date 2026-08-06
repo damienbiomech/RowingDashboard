@@ -370,6 +370,7 @@ ui <- dashboardPage(
   )
 )
 
+##############################################################################################
 
 ### Server ###
 server <- function(input, output, session) {
@@ -392,6 +393,197 @@ server <- function(input, output, session) {
     updateSelectizeInput(session, "athlete_ui", choices = athlete_choices, server = TRUE)
   })
   
+  ### On-Water ###
+  
+  # Filter Biomechanics MetaData by Athlete Name #
+  Athlete_ids <- reactive({ req(input$athlete_ui)
+    MetaData %>% dplyr::filter(Name == input$athlete_ui) %>% 
+      dplyr::filter(Rate.Bin == input$set.Rate) })
+  
+  observe({
+    updateSelectizeInput(session, "set.Boat", 
+                         choices = sort(unique(Athlete_ids()$BoatClass))) })
+  
+  # Query Biomechanics DB & Filter SBS Data by Athlete #
+  filtered_SBS_athlete <- reactive({
+    req(input$athlete_ui, input$set.Boat, Athlete_ids()$SessionId)
+    
+    Boat_ids <- reactive({Athlete_ids() %>% 
+      dplyr::filter(BoatClass == input$set.Boat)})
+    
+    ids <- as.character(paste(Boat_ids()$SessionId, collapse = ","))
+    
+    ## Get Aperiodic Data ##
+    query <- paste0("SELECT SessionId,Side,SwivelPower,MinAngle,MaxAngle,
+                    CatchSlip,FinishSlip,AngleMaxF,Angle07F FROM ",DBdirectory,
+                    ".aperiodic_athlete_data WHERE SessionId IN (", ids, ")")
+    Data <- DBI::dbGetQuery(mydb, query) %>% 
+      mutate(Length = abs(MinAngle) + MaxAngle,
+             EffectiveLength = Length-CatchSlip-FinishSlip,
+             Side = str_replace(Side, "Port", "Stroke"),
+             Side = str_replace(Side, "Stbd", "Bow")) %>% 
+      rename(CatchAngle = MinAngle,
+             FinishAngle = MaxAngle) %>%
+      select(-CatchSlip,-FinishSlip)
+    
+    Data <- merge(Data,Athlete_ids(),by = c("SessionId"))
+    
+    Data <- Data %>% 
+      pivot_longer(cols = SwivelPower:EffectiveLength,
+                   names_to = 'Metric',
+                   values_to = 'Value')
+    return(Data)
+  })
+  
+  ## Length Metrics ##
+  
+  output$BoxPlot_Length <- renderPlot({
+    
+    validate(need(nrow(filtered_SBS_athlete()) > 0, 
+                  "Please select an option to view the Graph."))
+    
+    Angle.Metrics <- c("EffectiveLength","CatchAngle","FinishAngle")
+    Angle.Metrics_labels <- c("Effective Length","Catch Angle","Finish Angle")
+    
+    # Process Athlete Raw Data
+    Data <- filtered_SBS_athlete() %>% 
+      dplyr::filter(Metric %in% Angle.Metrics) %>% 
+      mutate(Value = case_when(Metric == "CatchAngle" ~ Value*-1, TRUE ~ Value),
+             Metric_ordered = factor(Metric, 
+                                     levels = Angle.Metrics,
+                                     labels = Angle.Metrics_labels))
+    
+    # Process Aggregated Benchmark Data
+    Ave_data <- SBS_ave %>%
+      dplyr::filter(BoatClass == input$set.Boat) %>%
+      dplyr::filter(Rate.Bin == input$set.Rate) %>% 
+      dplyr::filter(Metric %in% Angle.Metrics,
+                    AgeGroup %in% c("SNR","U23")) %>% 
+      mutate(Mean = case_when(Metric == "CatchAngle" ~ Mean * -1, TRUE ~ Mean),
+             Metric_ordered = factor(Metric, 
+                                     levels = Angle.Metrics,
+                                     labels = Angle.Metrics_labels),
+             Side = str_replace(Side, "Port", "Stroke Ave"),
+             Side = str_replace(Side, "Stbd", "Bow Ave")) %>%
+      mutate(label = paste(Side, AgeGroup)) %>%
+      mutate(label = factor(label, 
+                            levels = c("Bow Ave U23", "Bow Ave SNR",
+                                       "Stroke Ave U23", "Stroke Ave SNR"))) %>%
+      mutate(fill_group = case_when(
+        str_detect(label, "SNR") ~ "SNR",
+        str_detect(label, "U23") ~ "U23",
+        TRUE ~ label))
+    
+    # Build the Side-by-Side Plot
+    ggplot() + 
+      # Left side: Athlete Raw Data Boxplot
+      geom_boxplot(data = Data, 
+                   aes(x = Side, y = Value, fill = Side), 
+                   coef = 0, 
+                   outliers = FALSE,
+                   width = 0.6) +
+      
+      # Right side: Benchmark Mean +/- SD Ranges using crossbars
+      geom_crossbar(data = Ave_data,
+                    aes(x = label, 
+                        y = Mean, 
+                        ymin = Mean - SD, 
+                        ymax = Mean + SD, 
+                        fill = fill_group),
+                    fatten = 2,       # Thickens the Mean line
+                    width = 0.4, 
+                    colour = "grey30") + 
+      
+      # Scaling and formatting
+      scale_x_discrete(labels = label_wrap(width = 5),
+                       guide = guide_axis(n.dodge = 1)) +
+      scale_fill_manual(values = c("SNR" = "gold",
+                                   "U23" = "orange",
+                                   "Bow" = "lightgreen",
+                                   "Stroke" = "red3")) +
+      theme(text = element_text(size = 13), 
+            legend.position = "none",
+            axis.title.x = element_blank(), 
+            axis.title.y = element_blank()) +
+      facet_wrap(~ Metric_ordered, scales = "free_y", nrow = 1)
+    
+  })
+  
+  ## Propulsion Metrics ##
+  
+  output$BoxPlot_Propulsion <- renderPlot({
+    
+    validate(need(nrow(filtered_SBS_athlete()) > 0, 
+                  "Please select an option to view the Graph."))
+    
+    Power.Metrics <- c("SwivelPower","Angle07F","AngleMaxF")
+    Power.Metrics_labels <- c("Swivel Power","Angle @ 70% Force","Angle @ Max Force")
+    
+    # Process Athlete Raw Data
+    Data <- filtered_SBS_athlete() %>% 
+      dplyr::filter(Metric %in% Power.Metrics) %>%
+      mutate(Value = case_when(Metric %in% c("Angle07F","AngleMaxF") 
+                               ~ Value*-1, TRUE ~ Value)) %>% 
+      mutate(Metric_ordered = factor(Metric, 
+                                     levels = Power.Metrics,
+                                     labels = Power.Metrics_labels))
+    
+    # Process Aggregated Benchmark Data
+    Ave_data <- SBS_ave %>%
+      dplyr::filter(BoatClass == input$set.Boat) %>%
+      dplyr::filter(Rate.Bin == input$set.Rate) %>% 
+      dplyr::filter(Metric %in% Power.Metrics,
+                    AgeGroup %in% c("SNR","U23")) %>% 
+      mutate(Mean = case_when(Metric %in% c("Angle07F","AngleMaxF") 
+                              ~ Mean * -1, TRUE ~ Mean),
+             Metric_ordered = factor(Metric, 
+                                     levels = Power.Metrics,
+                                     labels = Power.Metrics_labels),
+             Side = str_replace(Side, "Port", "Stroke Ave"),
+             Side = str_replace(Side, "Stbd", "Bow Ave")) %>%
+      mutate(label = paste(Side, AgeGroup)) %>%
+      mutate(label = factor(label, 
+                            levels = c("Bow Ave U23", "Bow Ave SNR",
+                                       "Stroke Ave U23", "Stroke Ave SNR"))) %>%
+      mutate(fill_group = case_when(
+        str_detect(label, "SNR") ~ "SNR",
+        str_detect(label, "U23") ~ "U23",
+        TRUE ~ label))
+    
+    # Build the Side-by-Side Plot
+    ggplot() + 
+      # Left side: Athlete Raw Data Boxplot
+      geom_boxplot(data = Data, 
+                   aes(x = Side, y = Value, fill = Side), 
+                   coef = 0, 
+                   outliers = FALSE,
+                   width = 0.6) +
+      
+      # Right side: Benchmark Mean +/- SD Ranges using crossbars
+      geom_crossbar(data = Ave_data,
+                    aes(x = label, 
+                        y = Mean, 
+                        ymin = Mean - SD, 
+                        ymax = Mean + SD, 
+                        fill = fill_group),
+                    fatten = 2,       # Thickens the Mean line
+                    width = 0.4, 
+                    colour = "grey30") + # Clean border for benchmark blocks
+      
+      # Scaling and formatting
+      scale_x_discrete(labels = label_wrap(width = 5),
+                       guide = guide_axis(n.dodge = 1)) +
+      scale_fill_manual(values = c("SNR" = "gold",
+                                   "U23" = "orange",
+                                   "Bow" = "lightgreen",
+                                   "Stroke" = "red3")) +
+      theme(text = element_text(size = 13), 
+            legend.position = "none",
+            axis.title.x = element_blank(), 
+            axis.title.y = element_blank()) +
+      facet_wrap(~ Metric_ordered, scales = "free_y", nrow = 1)
+    
+  })
   
   ### Trunk ###
   

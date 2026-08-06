@@ -695,8 +695,7 @@ server <- function(input, output, session) {
                 name = paste("Best"), fill = "none",
                 line = list(color = best_col, width = 3),
                 marker = list(size = 8, color = best_col)) %>%
-      layout(title = list(text = selected_athlete, font = list(color = "black")),
-             font = list(color = "black"),
+      layout(font = list(color = "black"),
              legend = list(font = list(color = "black")),
              showlegend = TRUE,
              polar = list(

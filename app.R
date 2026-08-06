@@ -212,13 +212,8 @@ df_Bridge <- DBI::dbGetQuery(mydb,query) %>%
 
 # Step 6: Biomechanics Data
 
-## Helpers ##
-
 Bins <- c(19.5,20.9,24,28,32,36,40,50)
 Bin_labels <- c("20","20-24","24-28","28-32","32-36","36-40",">40")
-Credentials <- fread("credentials.csv")
-User_ID = Credentials$User_ID[1]
-User_PWD = Credentials$User_PWD[1]
 
 ## Load Boat Class & Age Group Means ##
 SBS_ave <- fread("./DB_ave.csv")
@@ -230,8 +225,8 @@ mydb <- DBI::dbConnect(odbc::odbc(),
                        Driver = "SQL Server",
                        Server = "nswis-sql201701",
                        Database = "RowingDB",
-                       UID = User_ID,
-                       PWD = User_PWD,
+                       UID = username_db,
+                       PWD = password_db,
                        Port = 1433)
 DBdirectory <- "rowing_new"
 

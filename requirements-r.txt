@@ -2,7 +2,6 @@ shiny
 tidyverse
 data.table
 plotly
-devtools
 Teamworksapp/smartabaseR
 shinyWidgets
 shinydashboard

@@ -425,7 +425,7 @@ server <- function(input, output, session) {
              FinishAngle = MaxAngle) %>%
       select(-CatchSlip,-FinishSlip)
     
-    Data <- merge(Data,Athlete_ids(),by = c("SessionId"))
+    Data <- merge(Athlete_ids(),Data,by = c("SessionId","SeatPosition"))
     
     Data <- Data %>% 
       pivot_longer(cols = SwivelPower:EffectiveLength,
@@ -497,7 +497,7 @@ server <- function(input, output, session) {
       scale_x_discrete(labels = label_wrap(width = 5),
                        guide = guide_axis(n.dodge = 1)) +
       scale_fill_manual(values = c("SNR" = "gold",
-                                   "U23" = "orange",
+                                   "U23" = "lightblue",
                                    "Bow" = "lightgreen",
                                    "Stroke" = "red3")) +
       theme(text = element_text(size = 13), 
@@ -573,7 +573,7 @@ server <- function(input, output, session) {
       scale_x_discrete(labels = label_wrap(width = 5),
                        guide = guide_axis(n.dodge = 1)) +
       scale_fill_manual(values = c("SNR" = "gold",
-                                   "U23" = "orange",
+                                   "U23" = "lightblue",
                                    "Bow" = "lightgreen",
                                    "Stroke" = "red3")) +
       theme(text = element_text(size = 13), 

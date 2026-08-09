@@ -410,12 +410,13 @@ server <- function(input, output, session) {
     Boat_ids <- reactive({Athlete_ids() %>% 
       dplyr::filter(BoatClass == input$set.Boat)})
     
-    ids <- as.character(paste(Boat_ids()$SessionId, collapse = ","))
+    ids_session <- as.character(paste(Boat_ids()$SessionId, collapse = ","))
+    ids_seatposition <- as.character(paste(FilteredId()$SeatPosition, collapse = ","))
     
     ## Get Aperiodic Data ##
-    query <- paste0("SELECT SessionId,Side,SwivelPower,MinAngle,MaxAngle,
+    query <- paste0("SELECT SessionId,SeatPosition,Side,SwivelPower,MinAngle,MaxAngle,
                     CatchSlip,FinishSlip,AngleMaxF,Angle07F FROM ",DBdirectory,
-                    ".aperiodic_athlete_data WHERE SessionId IN (", ids, ")")
+                    ".aperiodic_athlete_data WHERE SessionId IN (", ids_session, " & ", ids_seatposition , ")")
     Data <- DBI::dbGetQuery(mydb, query) %>% 
       mutate(Length = abs(MinAngle) + MaxAngle,
              EffectiveLength = Length-CatchSlip-FinishSlip,

@@ -238,7 +238,7 @@ query <- paste0("SELECT AthleteId,Name FROM ",DBdirectory, ".Athlete")
 Athlete_list <- DBI::dbGetQuery(mydb,query)
 
 ## Athlete Session Data ##
-query <- paste0("SELECT SessionId,AthleteId,Position FROM ",
+query <- paste0("SELECT SessionAthleteId,SessionId,AthleteId,Position FROM ",
                 DBdirectory, ".session_athlete")
 Session_Athlete <- DBI::dbGetQuery(mydb,query) %>%
   rename(SeatPosition = Position)
@@ -264,7 +264,6 @@ MetaData <- MetaData %>%
 MetaData <- MetaData %>% 
   mutate(Rate.Bin = cut(Rating, breaks = Bins, labels = Bin_labels),
          Date = make_date(year = Year, month = Month, day = Day))
-
 
 ################################################################################
 

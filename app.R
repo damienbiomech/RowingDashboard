@@ -353,7 +353,7 @@ ui <- dashboardPage(
                            selected = "CMJ"),
                box(title = "Profile", status = "primary", 
                    solidHeader = TRUE, collapsible = TRUE, 
-                   height = "600px", width = 12,
+                   height = "600px", width = 10,
                    fluidRow(column(width = 10,
                                    plotlyOutput("FDecks_plot_left", width = "100%", height = "160px"))),
                    br(),

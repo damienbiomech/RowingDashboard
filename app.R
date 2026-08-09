@@ -410,7 +410,7 @@ server <- function(input, output, session) {
       dplyr::filter(BoatClass == input$set.Boat)})
     
     ids_session <- as.character(paste(Boat_ids()$SessionId, collapse = ","))
-    ids_seatposition <- as.character(paste(FilteredId()$SeatPosition, collapse = ","))
+    ids_seatposition <- as.character(paste(Boat_ids()$SeatPosition, collapse = ","))
     
     ## Get Aperiodic Data ##
     query <- paste0("SELECT SessionId,SeatPosition,Side,SwivelPower,MinAngle,MaxAngle,

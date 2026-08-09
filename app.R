@@ -301,10 +301,10 @@ ui <- dashboardPage(
                                                           "36-40",">40"),
                                               width = "100%"))),
                box(title = "Length", status = "success", 
-                   solidHeader = TRUE, collapsible = TRUE, width = 12,
+                   solidHeader = TRUE, collapsible = TRUE, width = 10,
                    plotOutput("BoxPlot_Length", height = 140)),
                box(title = "Propulsion", status = "success", 
-                   solidHeader = TRUE, collapsible = TRUE, width = 12,
+                   solidHeader = TRUE, collapsible = TRUE, width = 10,
                    plotOutput("BoxPlot_Propulsion", height = 140))
       ),
       tabPanel("MSK",
@@ -327,7 +327,7 @@ ui <- dashboardPage(
                            choices = c("All", "Prone Endurance", "Supine Endurance", 
                                        "Left Side Hold", "Right Side Hold"),
                            selected = "All"),
-               box(title = "Profile", status = "primary", width = 12,
+               box(title = "Profile", status = "primary", width = 10,
                    solidHeader = TRUE, collapsible = TRUE, height = "500px",
                    fluidRow(
                      column(width = 6, 
@@ -354,13 +354,13 @@ ui <- dashboardPage(
                box(title = "Profile", status = "primary", 
                    solidHeader = TRUE, collapsible = TRUE, 
                    height = "600px", width = 12,
-                   fluidRow(column(width = 12,
+                   fluidRow(column(width = 10,
                                    plotlyOutput("FDecks_plot_left", width = "100%", height = "160px"))),
                    br(),
-                   fluidRow(column(width = 12,
+                   fluidRow(column(width = 10,
                                    plotlyOutput("FDecks_plot_mid", width = "100%", height = "160px"))),
                    br(),
-                   fluidRow(column(width = 12,
+                   fluidRow(column(width = 10,
                                    plotlyOutput("FDecks_plot_right", width = "100%", height = "160px")))
                )
       )

@@ -65,7 +65,9 @@ ams_pw <- Sys.getenv("AMS_PW")
 ams_url <- "ams.ausport.gov.au/nswis/"
 
 # Function for the query to DB using Club_list to filter Names
-fetch_ams_event_data <- function(form_name, days_back = 5, url = ams_url, username = ams_un, password = ams_pw, club_names = Club_list$Name) {
+fetch_ams_event_data <- function(form_name, days_back = 5, url = ams_url, 
+                                 username = ams_un, password = ams_pw, 
+                                 club_names = Club_list$Name) {
   sb_get_event(
     form = form_name, 
     date_range = sb_date_range(days_back, "years"), 

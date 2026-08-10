@@ -2,9 +2,9 @@ shiny
 tidyverse
 data.table
 plotly
-Teamworksapp/smartabaseR
 shinyWidgets
 shinydashboard
+Teamworksapp/smartabaseR
 DBI
 httr2
 readr

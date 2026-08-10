@@ -28,7 +28,7 @@ get_ludis_csv <- function(filename, dataset_id,
   resp <- request(url_file) |> 
     req_headers(`x-api-key` = LUDIS_KEY) |> 
     req_perform()
-  print(paste("Reading:",url_file))
+  print(paste("Reading:",filename))
   fread(I(resp_body_string(resp)))
 }
 

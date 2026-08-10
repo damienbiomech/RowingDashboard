@@ -20,10 +20,10 @@ options(shiny.port = 80)
 
 LUDIS_KEY <- Sys.getenv("LUDIS_API_TOKEN")
 dataset_id <- "90c3600"
-dataset_url <- "https://prod-backend.ludisanalytics.com/v2/api/ludisurl/%s?filePath=%s"
 
 # Function for the API call and CSV read
-get_ludis_csv <- function(filename, dataset_id, dataset_url = dataset_url) {
+get_ludis_csv <- function(filename, dataset_id, 
+                          dataset_url = "https://prod-backend.ludisanalytics.com/v2/api/ludisurl/%s?filePath=%s") {
   url_file <- sprintf(dataset_url, dataset_id, filename)
   resp <- request(url_file) |> 
     req_headers(`x-api-key` = LUDIS_KEY) |> 

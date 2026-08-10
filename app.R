@@ -70,10 +70,10 @@ benchmark_lookup <- fread(I(resp_body_string(resp)))
 ## AMS Download ##
 
 # Credentials #
-#ams_un <- Sys.getenv("AMS_UN")
-#ams_pw <- Sys.getenv("AMS_PW")
-ams_un <- "damien.o'meara"
-ams_pw <- "Damien123"
+ams_un <- Sys.getenv("AMS_UN")
+ams_pw <- Sys.getenv("AMS_PW")
+#ams_un <- "damien.o'meara"
+#ams_pw <- "Damien123"
 
 # Step 1: Trunk Testing #
 AMS_Trunk <- sb_get_event(form = "NSWIS - Rowing - Trunk Testing",

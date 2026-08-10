@@ -31,7 +31,6 @@ dataset_id = "90c3600"
 filename = 'Athlete_list.csv'
 url_file  <- sprintf(
   "https://prod-backend.ludisanalytics.com/v2/api/ludisurl/%s?filePath=%s", dataset_id, filename)
-print(url_file)
 resp <- request(url_file) |>
 req_headers(`x-api-key` = LUDIS_KEY) |>
 req_perform()
@@ -52,7 +51,6 @@ db <- db %>% mutate(Date = as.Date(Date))
 db <- left_join(db, Club_list, by = "Name", suffix = c("", ".y")) %>% 
   mutate(Gender = coalesce(Gender, Gender.y)) %>%
   select(-Gender.y)
-
 setnames(db, names(db), gsub(" ", "_", names(db)))
 
 ## Load RA Benchmarks ##

@@ -62,11 +62,12 @@ SBS_ave <- get_ludis_csv("DB_ave.csv")
 ams_un <- Sys.getenv("AMS_UN")
 ams_un <- "damien.o'meara"
 ams_pw <- Sys.getenv("AMS_PW")
+ams_url <- "ams.ausport.gov.au/nswis/"
 
 # Step 1: Trunk Testing #
 AMS_Trunk <- sb_get_event(form = "NSWIS - Rowing - Trunk Testing",
                           date_range = sb_date_range("5", "years"),
-                          url = "ams.ausport.gov.au/nswis/",
+                          url = ams_url,
                           username = ams_un,
                           password = ams_pw,
                           filter = sb_get_event_filter(
@@ -92,7 +93,7 @@ df_trunk <- bind_rows(df_trunk, gender_means)
 # Step 2: Strength Testing #
 AMS_Strength <- sb_get_event(form = "NSWIS - Rowing - Strength Testing",
                              date_range = sb_date_range("5", "years"),
-                             url = "ams.ausport.gov.au/nswis/",
+                             url = ams_url,
                              username = ams_un,
                              password = ams_pw,
                              filter = sb_get_event_filter(
@@ -121,7 +122,7 @@ df_strength <- bind_rows(df_strength, strength_gender_means)
 # Step 3: MSK Screening
 AMS_MSK <- sb_get_event(form = "Rowing - MSK Screening",
                         date_range = sb_date_range("5", "years"),
-                        url = "ams.ausport.gov.au/nswis/",
+                        url = ams_url,
                         username = ams_un,
                         password = ams_pw,
                         filter = sb_get_event_filter(

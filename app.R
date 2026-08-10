@@ -31,18 +31,6 @@ get_ludis_csv <- function(filename) {
   fread(I(resp_body_string(resp)))
 }
 
-# Function for the query to DB using Club_list to filter Names
-fetch_ams_event_data <- function(form_name, days_back = 5, url = ams_url, username = ams_un, password = ams_pw, club_names = Club_list$Name) {
-  sb_get_event(
-    form = form_name, 
-    date_range = sb_date_range(days_back, "years"), 
-    url = url, 
-    username = username, 
-    password = password, 
-    filter = sb_get_event_filter(user_key = "about", user_value = club_names)
-  )
-}
-
 ###############################################################################
 
 ### Import Local Data Files ###
@@ -75,6 +63,18 @@ ams_un <- Sys.getenv("AMS_UN")
 ams_un <- "damien.o'meara"
 ams_pw <- Sys.getenv("AMS_PW")
 ams_url <- "ams.ausport.gov.au/nswis/"
+
+# Function for the query to DB using Club_list to filter Names
+fetch_ams_event_data <- function(form_name, days_back = 5, url = ams_url, username = ams_un, password = ams_pw, club_names = Club_list$Name) {
+  sb_get_event(
+    form = form_name, 
+    date_range = sb_date_range(days_back, "years"), 
+    url = url, 
+    username = username, 
+    password = password, 
+    filter = sb_get_event_filter(user_key = "about", user_value = club_names)
+  )
+}
 
 # Step 1: Trunk Testing #
 AMS_Trunk <- fetch_ams_event_data(form_name = "NSWIS - Rowing - Trunk Testing")
@@ -168,6 +168,19 @@ df_msk <- bind_rows(df_MSK, MSK_gender_means)
 username_db <- Sys.getenv("username")
 password_db <-  Sys.getenv("password")
 ludis_db <-  Sys.getenv("ludis_ip")
+DBdirectory <- "dbo"
+
+# Function for the query to DB using Club_list to filter Names
+fetch_DB_data <- function(Database, Driver = "ODBC Driver 18 for SQL Server", Server = ludis_db, UID = username_db, PWD = password_db, TSC = 'yes') {
+  DBI::dbConnect(odbc::odbc(),
+                       Driver = Driver,
+                       Server = Server,
+                       Database = Database,
+                       UID = username_db,
+                       PWD = password_db,
+                       TrustServerCertificate = TSC
+                       )
+}
 
 mydb <- DBI::dbConnect(odbc::odbc(),
                        Driver = "ODBC Driver 18 for SQL Server",
@@ -176,8 +189,8 @@ mydb <- DBI::dbConnect(odbc::odbc(),
                        UID = username_db,
                        PWD = password_db,
                        TrustServerCertificate='yes')
-DBdirectory <- "dbo"
 
+mydb <- fetch_DB_data("nswis_dw")
 ## Query Database for Athlete & Session Data ##
 Col_list <- "about, start_date, Test_Type, Metric, Value"
 query <- paste0("SELECT ",Col_list," FROM ",DBdirectory, ".Force_Decks_Flow")

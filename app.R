@@ -78,15 +78,6 @@ fetch_ams_event_data <- function(form_name, days_back = 5, url = ams_url, userna
 
 # Step 1: Trunk Testing #
 AMS_Trunk <- fetch_ams_event_data(form_name = "NSWIS - Rowing - Trunk Testing")
-#AMS_Trunk <- sb_get_event(form = "NSWIS - Rowing - Trunk Testing",
-#                          date_range = sb_date_range("5", "years"),
-#                          url = ams_url,
-#                          username = ams_un,
-#                          password = ams_pw,
-#                          filter = sb_get_event_filter(
-#                            user_key = "about",
-#                            user_value = Club_list$Name
-#                          ))
 
 df_trunk <- AMS_Trunk %>% rename(Name = about) %>% 
   mutate(Date = as.Date(start_date, format = "%d/%m/%Y")) %>% 
@@ -104,15 +95,6 @@ df_trunk <- bind_rows(df_trunk, gender_means)
 
 # Step 2: Strength Testing #
 AMS_Strength <- fetch_ams_event_data(form_name = "NSWIS - Rowing - Strength Testing")
-#AMS_Strength <- sb_get_event(form = "NSWIS - Rowing - Strength Testing",
-#                             date_range = sb_date_range("5", "years"),
-#                             url = ams_url,
-#                             username = ams_un,
-#                             password = ams_pw,
-#                             filter = sb_get_event_filter(
-#                               user_key = "about",
-#                               user_value = Club_list$Name
-#                             ))
 
 df_strength <- AMS_Strength %>% rename(Name = about) %>% 
   mutate(Date = as.Date(start_date, format = "%d/%m/%Y")) %>% 
@@ -133,15 +115,6 @@ df_strength <- bind_rows(df_strength, strength_gender_means)
 
 # Step 3: MSK Screening
 AMS_MSK <- fetch_ams_event_data(form_name = "Rowing - MSK Screening")
-#AMS_MSK <- sb_get_event(form = "Rowing - MSK Screening",
-#                        date_range = sb_date_range("5", "years"),
-#                        url = ams_url,
-#                        username = ams_un,
-#                        password = ams_pw,
-#                        filter = sb_get_event_filter(
-#                          user_key = "about",
-#                          user_value = Club_list$Name
-#                        ))
 
 df_MSK <- AMS_MSK %>% rename(Name = about) %>% 
   mutate(Date = as.Date(start_date, format = "%d/%m/%Y")) %>% 
@@ -168,7 +141,6 @@ df_msk <- bind_rows(df_MSK, MSK_gender_means)
 username_db <- Sys.getenv("username")
 password_db <-  Sys.getenv("password")
 ludis_db <-  Sys.getenv("ludis_ip")
-DBdirectory <- "dbo"
 
 # Function for the query NSWIS Database
 fetch_DB_data <- function(Database, Driver = "ODBC Driver 18 for SQL Server", Server = ludis_db, UID = username_db, PWD = password_db, TSC = 'yes') {
@@ -182,17 +154,9 @@ fetch_DB_data <- function(Database, Driver = "ODBC Driver 18 for SQL Server", Se
                        )
 }
 
-#mydb <- DBI::dbConnect(odbc::odbc(),
-#                       Driver = "ODBC Driver 18 for SQL Server",
-#                       Server = ludis_db,
-#                       Database = "nswis_dw",
-#                       UID = username_db,
-#                       PWD = password_db,
-#                       TrustServerCertificate='yes')
-
-
 ## Query Database for Athlete & Session Data ##
 mydb <- fetch_DB_data("nswis_dw")
+DBdirectory <- "dbo"
 Col_list <- "about, start_date, Test_Type, Metric, Value"
 query <- paste0("SELECT ",Col_list," FROM ",DBdirectory, ".Force_Decks_Flow")
 
@@ -234,13 +198,6 @@ Bin_labels <- c("20","20-24","24-28","28-32","32-36","36-40",">40")
 ## Query Database for Athlete SBS data ##
 
 # Connect to Database #
-#mydb <- DBI::dbConnect(odbc::odbc(),
-#                       Driver = "ODBC Driver 18 for SQL Server",
-#                       Server = ludis_ip,
-#                       Database = "RowingDB",
-#                       UID = username_db,
-#                       PWD = password_db,
-#                       TrustServerCertificate='yes')
 mydb <- fetch_DB_data("RowingDB")
 DBdirectory <- "rowing_new"
 

@@ -49,6 +49,10 @@ setnames(db, names(db), gsub(" ", "_", names(db)))
 # Load RA Benchmarks
 benchmark_lookup <- get_ludis_csv('benchmarks.csv')
 
+# Load Biomechanics Boat Class & Age Group Means #
+SBS_ave <- get_ludis_csv("DB_ave.csv")
+
+
 ### Import Database Data ###
 
 ## AMS Download ##
@@ -197,9 +201,6 @@ df_FDecks <- bind_rows(df_FDecks, FDecks_gender_means)
 
 Bins <- c(19.5,20.9,24,28,32,36,40,50)
 Bin_labels <- c("20","20-24","24-28","28-32","32-36","36-40",">40")
-
-## Load Boat Class & Age Group Means ##
-SBS_ave <- fread("./DB_ave.csv")
 
 ## Query Database for Athlete SBS data ##
 

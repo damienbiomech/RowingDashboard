@@ -22,8 +22,7 @@ options(shiny.port = 80)
 
 LUDIS_KEY <- Sys.getenv("LUDIS_API_TOKEN")
 dataset_id = "90c3600"
-print(LUDIS_KEY)
-print(dataset_id)
+
 ##############################################################################
 
 ## Import Local Data Files ###
@@ -35,7 +34,12 @@ url_file  <- sprintf(
 resp <- request(url_file) |>
 req_headers(`x-api-key` = LUDIS_KEY) |>
 req_perform()
-print(url_file)
+data <- fread(resp_body_string(resp))
+print(filename)
+print(data)
+
+
+
 
 #https://prod-backend.ludisanalytics.com/v2/api/ludisurl/90c3600?filePath=Athlete%20Profile_DB.csv
 

@@ -38,7 +38,7 @@ data <- fread(resp_body_string(resp))
 print(filename)
 print(data)
 
-filename = 'Athlete%20Profile_DB'
+filename = 'Athlete%20Profile_DB.csv'
 
 
 url_file  <- sprintf(

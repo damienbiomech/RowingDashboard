@@ -31,6 +31,18 @@ get_ludis_csv <- function(filename) {
   fread(I(resp_body_string(resp)))
 }
 
+# Function for the query to DB using Club_list to filter Names
+fetch_ams_event_data <- function(form_name, days_back = 5, url = ams_url, username = ams_un, password = ams_pw, club_names = Club_list$Name) {
+  sb_get_event(
+    form = form_name, 
+    date_range = sb_date_range(days_back, "years"), 
+    url = url, 
+    username = username, 
+    password = password, 
+    filter = sb_get_event_filter(user_key = "about", user_value = club_names)
+  )
+}
+
 ###############################################################################
 
 ### Import Local Data Files ###
@@ -65,15 +77,16 @@ ams_pw <- Sys.getenv("AMS_PW")
 ams_url <- "ams.ausport.gov.au/nswis/"
 
 # Step 1: Trunk Testing #
-AMS_Trunk <- sb_get_event(form = "NSWIS - Rowing - Trunk Testing",
-                          date_range = sb_date_range("5", "years"),
-                          url = ams_url,
-                          username = ams_un,
-                          password = ams_pw,
-                          filter = sb_get_event_filter(
-                            user_key = "about",
-                            user_value = Club_list$Name
-                          ))
+AMS_Trunk <- fetch_ams_event_data(form_name = "NSWIS - Rowing - Trunk Testing")
+#AMS_Trunk <- sb_get_event(form = "NSWIS - Rowing - Trunk Testing",
+#                          date_range = sb_date_range("5", "years"),
+#                          url = ams_url,
+#                          username = ams_un,
+#                          password = ams_pw,
+#                          filter = sb_get_event_filter(
+#                            user_key = "about",
+#                            user_value = Club_list$Name
+#                          ))
 
 df_trunk <- AMS_Trunk %>% rename(Name = about) %>% 
   mutate(Date = as.Date(start_date, format = "%d/%m/%Y")) %>% 
@@ -89,17 +102,17 @@ gender_means <- df_trunk %>%
 
 df_trunk <- bind_rows(df_trunk, gender_means)
 
-
 # Step 2: Strength Testing #
-AMS_Strength <- sb_get_event(form = "NSWIS - Rowing - Strength Testing",
-                             date_range = sb_date_range("5", "years"),
-                             url = ams_url,
-                             username = ams_un,
-                             password = ams_pw,
-                             filter = sb_get_event_filter(
-                               user_key = "about",
-                               user_value = Club_list$Name
-                             ))
+AMS_Strength <- fetch_ams_event_data(form_name = "NSWIS - Rowing - Strength Testing")
+#AMS_Strength <- sb_get_event(form = "NSWIS - Rowing - Strength Testing",
+#                             date_range = sb_date_range("5", "years"),
+#                             url = ams_url,
+#                             username = ams_un,
+#                             password = ams_pw,
+#                             filter = sb_get_event_filter(
+#                               user_key = "about",
+#                               user_value = Club_list$Name
+#                             ))
 
 df_strength <- AMS_Strength %>% rename(Name = about) %>% 
   mutate(Date = as.Date(start_date, format = "%d/%m/%Y")) %>% 
@@ -118,17 +131,17 @@ strength_gender_means <- df_strength %>%
 
 df_strength <- bind_rows(df_strength, strength_gender_means)
 
-
 # Step 3: MSK Screening
-AMS_MSK <- sb_get_event(form = "Rowing - MSK Screening",
-                        date_range = sb_date_range("5", "years"),
-                        url = ams_url,
-                        username = ams_un,
-                        password = ams_pw,
-                        filter = sb_get_event_filter(
-                          user_key = "about",
-                          user_value = Club_list$Name
-                        ))
+AMS_MSK <- fetch_ams_event_data(form_name = "Rowing - MSK Screening")
+#AMS_MSK <- sb_get_event(form = "Rowing - MSK Screening",
+#                        date_range = sb_date_range("5", "years"),
+#                        url = ams_url,
+#                        username = ams_un,
+#                        password = ams_pw,
+#                        filter = sb_get_event_filter(
+#                          user_key = "about",
+#                          user_value = Club_list$Name
+#                        ))
 
 df_MSK <- AMS_MSK %>% rename(Name = about) %>% 
   mutate(Date = as.Date(start_date, format = "%d/%m/%Y")) %>% 
@@ -148,7 +161,6 @@ MSK_gender_means <- df_MSK %>%
             Date = as.Date(NA))
 
 df_msk <- bind_rows(df_MSK, MSK_gender_means)
-
 
 # Step 4: Force Decks Trials
 

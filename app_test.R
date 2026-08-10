@@ -38,7 +38,8 @@ data <- fread(resp_body_string(resp))
 print(filename)
 print(data)
 
-filename = 'Athlete ProfileDB.csv'
+filename = 'Athlete%20Profile_DB'
+
 
 url_file  <- sprintf(
   "https://prod-backend.ludisanalytics.com/v2/api/ludisurl/%s?filePath=%s", dataset_id, filename)

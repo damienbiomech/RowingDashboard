@@ -37,3 +37,7 @@ resp <- request(url_file) |>
 req_headers(`x-api-key` = LUDIS_KEY) |>
 req_perform()
 print(url_file)
+
+https://prod-backend.ludisanalytics.com/v2/api/ludisurl/90c3600?filePath=Athlete%20Profile_DB.csv
+https://prod-backend.ludisanalytics.com/v2/api/ludisurl/90c3600?filePath=Athlete_list.csv
+https://prod-backend.ludisanalytics.com/v2/api/ludisurl/90c3600?filePath=benchmarks.csv

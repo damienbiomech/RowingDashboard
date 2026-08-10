@@ -145,7 +145,8 @@ password_db <-  Sys.getenv("password")
 ludis_db <-  Sys.getenv("ludis_ip")
 
 # Function for the query NSWIS Database
-fetch_DB_data <- function(Database, Driver = "ODBC Driver 18 for SQL Server", Server = ludis_db, UID = username_db, PWD = password_db, TSC = 'yes') {
+fetch_DB_data <- function(Database, Driver = "ODBC Driver 18 for SQL Server", 
+                          Server = ludis_db, UID = username_db, PWD = password_db, TSC = 'yes') {
   DBI::dbConnect(odbc::odbc(),
                        Driver = Driver,
                        Server = Server,

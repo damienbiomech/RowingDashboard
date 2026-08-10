@@ -24,7 +24,7 @@ headers <- c('X-api-key' = Sys.getenv('LUDIS_API_TOKEN'))
 LUDIS_KEY <- Sys.getenv("LUDIS_API_TOKEN")
 dataset_id = "90c3600"
 print(LUDIS_KEY)
-
+print(dataset_id)
 ##############################################################################
 
 ## Import Local Data Files ###

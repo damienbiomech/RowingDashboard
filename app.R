@@ -49,37 +49,6 @@ setnames(db, names(db), gsub(" ", "_", names(db)))
 # Load RA Benchmarks
 benchmark_lookup <- get_ludis_csv('benchmarks.csv')
 
-## Load Athlete & Club list ##
-#filename = 'Athlete_list.csv'
-#url_file  <- sprintf(dataset_url, dataset_id, filename)
-#resp <- request(url_file) |>
-#req_headers(`x-api-key` = LUDIS_KEY) |>
-#req_perform()
-#Club_list <- fread(I(resp_body_string(resp)))
-
-## Load Benchmarks Data & Physiology Data ##
-#filename = 'AthleteProfile_DB.csv'
-#url_file  <- sprintf(dataset_url, dataset_id, filename)
-#resp <- request(url_file) |>
-#req_headers(`x-api-key` = LUDIS_KEY) |>
-#req_perform()
-#db <- fread(I(resp_body_string(resp)))
-
-#db <- db %>% mutate(Date = as.Date(Date))
-#db <- left_join(db, Club_list, by = "Name", suffix = c("", ".y")) %>% 
-#  mutate(Gender = coalesce(Gender, Gender.y)) %>%
-#  select(-Gender.y)
-#setnames(db, names(db), gsub(" ", "_", names(db)))
-
-## Load RA Benchmarks ##
-#filename = 'benchmarks.csv'
-#url_file  <- sprintf(dataset_url, dataset_id, filename)
-#resp <- request(url_file) |>
-#req_headers(`x-api-key` = LUDIS_KEY) |>
-#req_perform()
-#benchmark_lookup <- fread(I(resp_body_string(resp)))
-
-
 ### Import Database Data ###
 
 ## AMS Download ##

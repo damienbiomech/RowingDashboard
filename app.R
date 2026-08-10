@@ -170,7 +170,7 @@ password_db <-  Sys.getenv("password")
 ludis_db <-  Sys.getenv("ludis_ip")
 DBdirectory <- "dbo"
 
-# Function for the query to DB using Club_list to filter Names
+# Function for the query NSWIS Database
 fetch_DB_data <- function(Database, Driver = "ODBC Driver 18 for SQL Server", Server = ludis_db, UID = username_db, PWD = password_db, TSC = 'yes') {
   DBI::dbConnect(odbc::odbc(),
                        Driver = Driver,
@@ -182,16 +182,17 @@ fetch_DB_data <- function(Database, Driver = "ODBC Driver 18 for SQL Server", Se
                        )
 }
 
-mydb <- DBI::dbConnect(odbc::odbc(),
-                       Driver = "ODBC Driver 18 for SQL Server",
-                       Server = ludis_db,
-                       Database = "nswis_dw",
-                       UID = username_db,
-                       PWD = password_db,
-                       TrustServerCertificate='yes')
+#mydb <- DBI::dbConnect(odbc::odbc(),
+#                       Driver = "ODBC Driver 18 for SQL Server",
+#                       Server = ludis_db,
+#                       Database = "nswis_dw",
+#                       UID = username_db,
+#                       PWD = password_db,
+#                       TrustServerCertificate='yes')
 
-mydb <- fetch_DB_data("nswis_dw")
+
 ## Query Database for Athlete & Session Data ##
+mydb <- fetch_DB_data("nswis_dw")
 Col_list <- "about, start_date, Test_Type, Metric, Value"
 query <- paste0("SELECT ",Col_list," FROM ",DBdirectory, ".Force_Decks_Flow")
 
@@ -233,13 +234,14 @@ Bin_labels <- c("20","20-24","24-28","28-32","32-36","36-40",">40")
 ## Query Database for Athlete SBS data ##
 
 # Connect to Database #
-mydb <- DBI::dbConnect(odbc::odbc(),
-                       Driver = "ODBC Driver 18 for SQL Server",
-                       Server = ludis_ip,
-                       Database = "RowingDB",
-                       UID = username_db,
-                       PWD = password_db,
-                       TrustServerCertificate='yes')
+#mydb <- DBI::dbConnect(odbc::odbc(),
+#                       Driver = "ODBC Driver 18 for SQL Server",
+#                       Server = ludis_ip,
+#                       Database = "RowingDB",
+#                       UID = username_db,
+#                       PWD = password_db,
+#                       TrustServerCertificate='yes')
+mydb <- fetch_DB_data("RowingDB")
 DBdirectory <- "rowing_new"
 
 ## Query Database for Athlete, Session & Piece Data ##

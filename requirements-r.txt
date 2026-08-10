@@ -5,4 +5,7 @@ plotly
 Teamworksapp/smartabaseR
 shinyWidgets
 shinydashboard
+DBI
+httr2
+readr
 scales

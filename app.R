@@ -155,6 +155,7 @@ df_msk <- bind_rows(df_MSK, MSK_gender_means)
 username_db <- Sys.getenv("username")
 password_db <-  Sys.getenv("password")
 ludis_db <-  Sys.getenv("ludis_ip")
+
 mydb <- DBI::dbConnect(odbc::odbc(),
                        Driver = "ODBC Driver 18 for SQL Server",
                        Server = ludis_db,
@@ -206,7 +207,6 @@ Bin_labels <- c("20","20-24","24-28","28-32","32-36","36-40",">40")
 ## Query Database for Athlete SBS data ##
 
 # Connect to Database #
-ludis_ip <- Sys.getenv('ludis_ip')
 mydb <- DBI::dbConnect(odbc::odbc(),
                        Driver = "ODBC Driver 18 for SQL Server",
                        Server = ludis_ip,

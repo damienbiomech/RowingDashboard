@@ -26,7 +26,6 @@ LUDIS_KEY <- Sys.getenv("LUDIS_API_TOKEN")
 dataset_id = "90c3600"
 
 ###############################################################################
-
 ### Import Local Data Files ###
 
 ## Load Athlete & Club list ##

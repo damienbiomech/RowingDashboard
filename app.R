@@ -1,10 +1,13 @@
 library(shiny)
 library(tidyverse)
 library(data.table)
-library(smartabaseR)
 library(plotly)
 library(shinyWidgets)
 library(shinydashboard)
+library(DBI)
+library(smartabaseR)
+library(httr2)
+library(readr)
 library(scales)
 
 ################################################################################

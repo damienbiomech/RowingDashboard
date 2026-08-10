@@ -13,39 +13,32 @@ library(scales)
 ################################################################################
 
 # Helpers #
-
 cDir <- '/srv/shiny-server'
-
 shiny::addResourcePath('www', '/srv/shiny-server/www')
-
 options(shiny.host = '0.0.0.0')
 options(shiny.port = 80)
-
 LUDIS_KEY <- Sys.getenv("LUDIS_API_TOKEN")
-dataset_id = "90c3600"
+dataset_id <- "90c3600"
+dataset_url <- "https://prod-backend.ludisanalytics.com/v2/api/ludisurl/%s?filePath=%s"
 
 ###############################################################################
 ### Import Local Data Files ###
 
 ## Load Athlete & Club list ##
 filename = 'Athlete_list.csv'
-url_file  <- sprintf(
-  "https://prod-backend.ludisanalytics.com/v2/api/ludisurl/%s?filePath=%s", dataset_id, filename)
+url_file  <- sprintf(dataset_url, dataset_id, filename)
 resp <- request(url_file) |>
 req_headers(`x-api-key` = LUDIS_KEY) |>
 req_perform()
 Club_list <- fread(I(resp_body_string(resp)))
-#Club_list <- read.csv("./Athlete_list.csv") 
 
 ## Load Benchmarks Data & Physiology Data ##
 filename = 'AthleteProfile_DB.csv'
-url_file  <- sprintf(
-  "https://prod-backend.ludisanalytics.com/v2/api/ludisurl/%s?filePath=%s", dataset_id, filename)
+url_file  <- sprintf(dataset_url, dataset_id, filename)
 resp <- request(url_file) |>
 req_headers(`x-api-key` = LUDIS_KEY) |>
 req_perform()
 db <- fread(I(resp_body_string(resp)))
-#db <- fread("./Athlete Profile_DB.csv") 
 
 db <- db %>% mutate(Date = as.Date(Date))
 db <- left_join(db, Club_list, by = "Name", suffix = c("", ".y")) %>% 
@@ -55,13 +48,11 @@ setnames(db, names(db), gsub(" ", "_", names(db)))
 
 ## Load RA Benchmarks ##
 filename = 'benchmarks.csv'
-url_file  <- sprintf(
-  "https://prod-backend.ludisanalytics.com/v2/api/ludisurl/%s?filePath=%s", dataset_id, filename)
+url_file  <- sprintf(dataset_url, dataset_id, filename)
 resp <- request(url_file) |>
 req_headers(`x-api-key` = LUDIS_KEY) |>
 req_perform()
 benchmark_lookup <- fread(I(resp_body_string(resp)))
-#benchmark_lookup <- read.csv("./benchmarks.csv")
 
 ### Import Database Data ###
 

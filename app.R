@@ -33,7 +33,6 @@ get_ludis_csv <- function(filename) {
 
 ###############################################################################
 
-
 ### Import Local Data Files ###
 # Load Athlete & Club list
 Club_list <- get_ludis_csv('Athlete_list.csv')

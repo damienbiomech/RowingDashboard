@@ -38,9 +38,27 @@ data <- fread(resp_body_string(resp))
 print(filename)
 print(data)
 
+filename = 'Athlete ProfileDB.csv'
 
+url_file  <- sprintf(
+  "https://prod-backend.ludisanalytics.com/v2/api/ludisurl/%s?filePath=%s", dataset_id, filename)
+resp <- request(url_file) |>
+req_headers(`x-api-key` = LUDIS_KEY) |>
+req_perform()
+data <- fread(resp_body_string(resp))
+print(filename)
+print(data)
 
+filename = 'benchmarks.csv'
 
+url_file  <- sprintf(
+  "https://prod-backend.ludisanalytics.com/v2/api/ludisurl/%s?filePath=%s", dataset_id, filename)
+resp <- request(url_file) |>
+req_headers(`x-api-key` = LUDIS_KEY) |>
+req_perform()
+data <- fread(resp_body_string(resp))
+print(filename)
+print(data)
 #https://prod-backend.ludisanalytics.com/v2/api/ludisurl/90c3600?filePath=Athlete%20Profile_DB.csv
 
 #https://prod-backend.ludisanalytics.com/v2/api/ludisurl/90c3600?filePath=Athlete_list.csv

@@ -352,7 +352,12 @@ ui <- dashboardPage(
 ### Server ###
 server <- function(input, output, session) {
   
-  clubs <- c("all", sort(unique(db$Club)))
+  if(Club_version){
+    clubs <- unique(Club_list$Club)
+  } else{
+    clubs <- c("all", sort(unique(db$Club)))
+  }
+  
   updateSelectizeInput(session, "club_ui", choices = clubs, server = TRUE)
   
   format_split <- function(x) {

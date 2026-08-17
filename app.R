@@ -40,7 +40,7 @@ Club_list <- get_ludis_csv('Athlete_list.csv',dataset_id)
 
 ## Filter by Club ##
 # Club_Options: c("SRC","SUBC","UTS")
-Club_list <- Club_list %>% dplyr::filter(Club == "UTS")
+Club_list <- Club_list %>% dplyr::filter(Club == "SUBC")
 Club_version <- TRUE
 
 ###############################################################################

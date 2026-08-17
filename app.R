@@ -40,6 +40,7 @@ Club_list <- get_ludis_csv('Athlete_list.csv',dataset_id)
 
 ## Filter by Club ##
 Club_list <- Club_list %>% dplyr::filter(Club == "SRC")
+Club_version <- TRUE
 
 ###############################################################################
 
@@ -106,7 +107,8 @@ AMS_Strength <- fetch_ams_event_data(form_name = "NSWIS - Rowing - Strength Test
 
 df_strength <- AMS_Strength %>% rename(Name = about) %>% 
   mutate(Date = as.Date(start_date, format = "%d/%m/%Y")) %>% 
-  select(Date, Name, `Squat (kg)`,`Bench Pull (kg)`,`Deadlift (kg)`,`Bench Press (kg)`,`Pull/ Chin Ups (reps)`)
+  select(Date, Name, `Squat (kg)`,`Bench Pull (kg)`,`Deadlift (kg)`,
+         `Bench Press (kg)`,`Pull/ Chin Ups (reps)`)
 df_strength <- left_join(df_strength, Club_list, by = "Name") %>% 
   dplyr::filter(!is.na(Club)) %>% 
   rename_with(~ gsub(" \\(kg\\)", "", .)) %>% 

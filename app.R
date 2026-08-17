@@ -38,6 +38,11 @@ get_ludis_csv <- function(filename, dataset_id,
 # Load Athlete & Club list
 Club_list <- get_ludis_csv('Athlete_list.csv',dataset_id)
 
+## Filter by Club ##
+Club_list <- Club_list %>% dplyr::filter(Club == "SRC")
+
+###############################################################################
+
 # Load Benchmarks Data & Physiology Data and clean
 db <- get_ludis_csv('AthleteProfile_DB.csv',dataset_id) |>
   mutate(Date = as.Date(Date)) |>
